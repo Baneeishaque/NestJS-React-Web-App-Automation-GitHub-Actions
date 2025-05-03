@@ -7,7 +7,7 @@ on:
       node-version:
         description: 'Node.js version'
         required: false
-        default: '["18.20.2", "18", "20", "22", "lts/*", "node"]'
+        default: '["18.20.8", "16", "18.20.2", "18", "20", "22", "lts/*", "node"]'
         type: string
       upload-artifact:
         description: 'Upload build artifact'
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ${{ fromJson(inputs.node-version || '["18.20.2", "18", "20", "22", "lts/*", "node"]') }}
+        node-version: ${{ fromJson(inputs.node-version || '["18.20.8", "16", "18.20.2", "18", "20", "22", "lts/*", "node"]') }}
     steps:
       - name: Checkout api repository
         uses: actions/checkout@v4.2.2
