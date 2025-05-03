@@ -118,7 +118,7 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "web/client-dist.zip"
-          target: "/home/${{ github.event.inputs.server_user }}/${{ secrets.APP_NAME }}/client/"
+          target: "/home/${{ github.event.inputs.server_user }}/${{ secrets.APP_NAME }}/"
           overwrite: true
 
       - name: SSH Deploy Web
@@ -128,9 +128,15 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ~/${{ secrets.APP_NAME }}/client || exit 1
-            if [ -f client-dist.zip ]; then sudo unzip -o client-dist.zip; else echo "client-dist.zip not found!"; exit 1; fi
-
+            cd ~/${{ secrets.APP_NAME }} || exit 1
+            if [ -f client-dist.zip ]; then
+              cd client || exit 1
+              sudo unzip -o ../client-dist.zip
+              cd ..
+            else
+              echo "client-dist.zip not found!"
+              exit 1
+            fi
   restart-services:
     runs-on: ubuntu-latest
     needs: deploy-web
