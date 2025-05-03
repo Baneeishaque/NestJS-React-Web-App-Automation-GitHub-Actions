@@ -1,0 +1,8 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.keys
+
+# Example files (these should be tracked)
+!.env.example
