@@ -2,13 +2,20 @@ name: Build CRM API
 
 on:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version'
+        required: false
+        default: '["18.20.2", "18", "20", "22", "lts/*", "node"]'
+        type: string
 
 jobs:
   build-api:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.20.2, 18, 20, 22, 'lts/*', 'node']
+        node-version: ${{ fromJson(inputs.node-version) }}
     steps:
       - name: Checkout crm-api repository
         uses: actions/checkout@v4
