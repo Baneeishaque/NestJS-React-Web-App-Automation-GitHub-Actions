@@ -1,3 +1,5 @@
+[![Deploy CRM API & Web](https://github.com/Baneeishaque/ScaleUp-Business-CRM-Automation-GitHub-Actions/actions/workflows/deploy.yaml/badge.svg)](https://github.com/Baneeishaque/ScaleUp-Business-CRM-Automation-GitHub-Actions/actions/workflows/deploy.yaml)
+
 # ScaleUp Business CRM Automation
 
 This repository contains the codebase and deployment workflow for the ScaleUp Business CRM Automation project, including:
