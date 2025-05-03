@@ -1,0 +1,34 @@
+name: Build API
+
+on:
+  workflow_dispatch:
+
+env:
+  API_DIR: api
+
+jobs:
+  build-api:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.20.2, 18, 20, 22, 'lts/*', 'node']
+    steps:
+      - name: Checkout api repository
+        uses: actions/checkout@v4.2.2
+        with:
+          repository: ${{ secrets.API_REPO }}
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          path: ${{ env.API_DIR }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ${{ env.API_DIR }}
+
+      - name: Build API
+        run: npm run build
+        working-directory: ${{ env.API_DIR }}
