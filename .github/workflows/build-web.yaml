@@ -29,3 +29,5 @@ jobs:
       - name: Build Web
         run: npm run build
         working-directory: crm-web
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
