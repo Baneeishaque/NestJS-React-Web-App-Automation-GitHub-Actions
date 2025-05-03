@@ -353,11 +353,11 @@ serve(async (req) => {
         // Try to parse as JSON first
         errorJson = await res.json();
         errorText = JSON.stringify(errorJson);
-      } catch (e) {
+      } catch (_e) {
         // Fall back to text
         try {
           errorText = await res.text();
-        } catch (e2) {
+        } catch (_e2) {
           errorText = "Could not read error response";
         }
       }
