@@ -33,7 +33,7 @@ jobs:
         run: npm install
         working-directory: crm-web
 
-      - name: Build Web
+      - name: Build Web (dev/test)
         run: npm run build
         working-directory: crm-web
         env:
