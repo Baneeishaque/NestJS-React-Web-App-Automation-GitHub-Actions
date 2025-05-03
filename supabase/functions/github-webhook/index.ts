@@ -34,13 +34,11 @@ serve(async (req) => {
 
     const AUTOMATION_REPO_OWNER = Deno.env.get("AUTOMATION_REPO_OWNER");
     const AUTOMATION_REPO_NAME = Deno.env.get("AUTOMATION_REPO_NAME");
-    const WORKFLOW_FILENAME = Deno.env.get("WORKFLOW_FILENAME");
 
-    if (!AUTOMATION_REPO_OWNER || !AUTOMATION_REPO_NAME || !WORKFLOW_FILENAME) {
+    if (!AUTOMATION_REPO_OWNER || !AUTOMATION_REPO_NAME) {
       console.error("Missing repository configuration variables", {
         hasRepoOwner: !!AUTOMATION_REPO_OWNER,
-        hasRepoName: !!AUTOMATION_REPO_NAME,
-        hasWorkflowFilename: !!WORKFLOW_FILENAME
+        hasRepoName: !!AUTOMATION_REPO_NAME
       });
       return new Response(
         JSON.stringify({ error: "Server configuration error: missing repository configuration" }),
@@ -48,7 +46,8 @@ serve(async (req) => {
       );
     }
 
-    const WORKFLOW_URL = `https://api.github.com/repos/${AUTOMATION_REPO_OWNER}/${AUTOMATION_REPO_NAME}/actions/workflows/${WORKFLOW_FILENAME}/dispatches`;
+    // We'll determine the workflow URL after parsing the payload
+    let workflowFilename: string | null = null;
 
     // 3. Parse and validate payload
     let payload;
@@ -128,13 +127,59 @@ serve(async (req) => {
     };
 
     // Add repository info from payload (limited to essential fields)
-    if (payload.repository) {
-      inputs.repository = payload.repository.full_name || "";
+    const repositoryFullName = payload.repository ? (payload.repository.full_name || "") : "";
+    if (repositoryFullName) {
+      inputs.repository = repositoryFullName;
     }
 
     if (payload.sender) {
       inputs.sender = payload.sender.login || "Unknown";
     }
+
+    // Load workflow mapping from JSON file
+    try {
+      // Read the workflow mapping JSON file
+      const workflowMappingText = await Deno.readTextFile("./workflow-mapping.json");
+      const workflowMapping = JSON.parse(workflowMappingText);
+
+      // Look up the workflow filename for this repository
+      if (repositoryFullName && workflowMapping[repositoryFullName]) {
+        workflowFilename = workflowMapping[repositoryFullName];
+        console.log(`Using repository-specific workflow file: ${workflowFilename} for ${repositoryFullName}`);
+      } else {
+        console.error(`Repository ${repositoryFullName} not found in workflow mapping`);
+        return new Response(
+          JSON.stringify({
+            error: "Repository not configured",
+            message: `No workflow mapping found for repository: ${repositoryFullName}`,
+            available_repositories: Object.keys(workflowMapping)
+          }),
+          { status: 400, headers: { "Content-Type": "application/json" } }
+        );
+      }
+    } catch (error) {
+      console.error("Error loading workflow mapping:", error);
+      return new Response(
+        JSON.stringify({
+          error: "Failed to load workflow mapping",
+          message: error instanceof Error ? error.message : String(error)
+        }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!workflowFilename) {
+      return new Response(
+        JSON.stringify({
+          error: "Could not determine workflow filename",
+          repository: repositoryFullName
+        }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Construct the workflow URL with the determined filename
+    const WORKFLOW_URL = `https://api.github.com/repos/${AUTOMATION_REPO_OWNER}/${AUTOMATION_REPO_NAME}/actions/workflows/${workflowFilename}/dispatches`;
 
     // 6. Process by event type
     let sourceRepoBranch = ""; // Will be determined based on event type
@@ -345,7 +390,7 @@ serve(async (req) => {
           event,
           inputs,
           automation_repo: `${AUTOMATION_REPO_OWNER}/${AUTOMATION_REPO_NAME}`,
-          workflow_filename: WORKFLOW_FILENAME,
+          workflow_filename: workflowFilename,
           workflow_branch: workflowBranch,
           source_branch: sourceRepoBranch,
           timestamp: new Date().toISOString()
