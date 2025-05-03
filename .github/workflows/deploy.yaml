@@ -62,7 +62,7 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "${{ env.API_DIR }}/${{ env.API_ZIP_NAME }}"
-          target: "/home/${{ github.event.inputs.server_user }}/${{ secrets.APP_NAME }}/"
+          target: "/home/${{ github.event.inputs.server_user }}/"
           overwrite: true
 
       - name: SSH Deploy API
