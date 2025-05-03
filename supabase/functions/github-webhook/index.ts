@@ -121,23 +121,19 @@ serve(async (req) => {
       );
     }
 
-    // 5. Prepare base inputs (common for all event types)
+    // 5. Prepare base inputs (common for all event types) - limited to 10 total properties
     let inputs: Record<string, string> = {
       event_type: event,
       timestamp: new Date().toISOString()
     };
 
-    // Add repository info from payload
+    // Add repository info from payload (limited to essential fields)
     if (payload.repository) {
       inputs.repository = payload.repository.full_name || "";
-      inputs.repo_url = payload.repository.html_url || "";
-      inputs.repo_description = payload.repository.description || "";
-      inputs.repo_default_branch = payload.repository.default_branch || "";
     }
 
     if (payload.sender) {
       inputs.sender = payload.sender.login || "Unknown";
-      inputs.sender_avatar = payload.sender.avatar_url || "";
     }
 
     // 6. Process by event type
@@ -175,23 +171,14 @@ serve(async (req) => {
           );
         }
 
-        // Full push event data extraction
+        // Push event data extraction - limited to stay under 10 total properties
         inputs = {
           ...inputs,
           branch: sourceRepoBranch,
           author: payload.pusher?.name || "Unknown",
-          author_email: payload.pusher?.email || "",
           commit_sha: payload.after || "",
           commit_message: payload.head_commit?.message || "",
           commit_url: payload.head_commit?.url || "",
-          compare_url: payload.compare || "",
-          commit_timestamp: payload.head_commit?.timestamp || "",
-          commit_author: payload.head_commit?.author?.name || "",
-          commit_author_email: payload.head_commit?.author?.email || "",
-          commit_committer: payload.head_commit?.committer?.name || "",
-          commit_committer_email: payload.head_commit?.committer?.email || "",
-          forced: payload.forced ? "true" : "false",
-          created: payload.created ? "true" : "false",
         };
       } catch (error) {
         console.error("Error parsing push event:", error, payload);
@@ -246,29 +233,16 @@ serve(async (req) => {
           );
         }
 
-        // Full PR event data extraction
+        // PR event data extraction - limited to stay under 10 total properties
         inputs = {
           ...inputs,
           branch: sourceRepoBranch,
           pr_number: payload.number?.toString() || "",
           pr_action: prAction,
           author: payload.pull_request.user?.login || "Unknown",
-          author_avatar: payload.pull_request.user?.avatar_url || "",
           pr_title: payload.pull_request.title || "",
           pr_url: payload.pull_request.html_url || "",
           target_branch: payload.pull_request.base?.ref || "",
-          pr_body: payload.pull_request.body?.substring(0, 500) || "", // Limit size
-          pr_created_at: payload.pull_request.created_at || "",
-          pr_updated_at: payload.pull_request.updated_at || "",
-          pr_assignees: payload.pull_request.assignees?.map((a: GitHubUser) => a.login).join(",") || "",
-          pr_requested_reviewers: payload.pull_request.requested_reviewers?.map((r: GitHubUser) => r.login).join(",") || "",
-          pr_labels: payload.pull_request.labels?.map((l: GitHubLabel) => l.name).join(",") || "",
-          pr_draft: payload.pull_request.draft ? "true" : "false",
-          pr_state: payload.pull_request.state || "",
-          pr_merged: payload.pull_request.merged ? "true" : "false",
-          pr_head_sha: payload.pull_request.head?.sha || "",
-          pr_head_repo: payload.pull_request.head?.repo?.full_name || "",
-          pr_base_repo: payload.pull_request.base?.repo?.full_name || "",
         };
       } catch (error) {
         console.error("Error parsing PR event:", error, payload);
@@ -299,7 +273,40 @@ serve(async (req) => {
       );
     }
 
-    // 7. Call GitHub Actions workflow_dispatch
+    // 7. Ensure inputs contains max 10 properties before triggering workflow
+    const inputKeys = Object.keys(inputs);
+    if (inputKeys.length > 10) {
+      console.warn(`Too many input properties (${inputKeys.length}), GitHub API limit is 10. Trimming inputs.`);
+
+      // Keep only the most important properties (max 10)
+      const essentialKeys = [
+        'event_type',
+        'timestamp',
+        'repository',
+        'sender',
+        'branch',
+        'author',
+        'commit_sha', // for push events
+        'pr_number',  // for PR events
+        'pr_title',   // for PR events
+        'target_branch' // for PR events
+      ];
+
+      // Create a new inputs object with only the essential keys
+      const trimmedInputs: Record<string, string> = {};
+      for (const key of essentialKeys) {
+        if (inputs[key] !== undefined) {
+          trimmedInputs[key] = inputs[key];
+          // Stop after 10 properties
+          if (Object.keys(trimmedInputs).length >= 10) break;
+        }
+      }
+
+      console.log(`Trimmed inputs from ${inputKeys.length} to ${Object.keys(trimmedInputs).length} properties`);
+      inputs = trimmedInputs;
+    }
+
+    // Call GitHub Actions workflow_dispatch
     console.log(`Triggering workflow for ${event} event with inputs:`, inputs);
 
     let res;
