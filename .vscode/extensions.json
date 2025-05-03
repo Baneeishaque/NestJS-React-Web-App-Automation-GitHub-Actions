@@ -2,6 +2,7 @@
   "recommendations": [
     "bierner.markdown-preview-github-styles",
     "davidAnson.vscode-markdownlint",
+    "denoland.vscode-deno",
     "donjayamanne.githistory",
     "eamodio.gitlens",
     "fittentech.fitten-code",
@@ -58,4 +59,3 @@
     "tomoki1207.pdf"
   ]
 }
-

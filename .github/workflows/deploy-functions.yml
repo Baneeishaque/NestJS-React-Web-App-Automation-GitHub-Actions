@@ -1,0 +1,43 @@
+name: Deploy Supabase Edge Functions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'supabase/functions/**'
+  workflow_dispatch:  # Allows manual triggering
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Find and deploy all Supabase functions
+        run: |
+          # List all function directories
+          cd supabase/functions
+          for func_dir in */; do
+            # Remove trailing slash
+            func_name=${func_dir%/}
+            echo "Deploying function: $func_name"
+
+            # Deploy the function
+            supabase functions deploy "$func_name" --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+
+            # Check if deployment was successful
+            if [ $? -eq 0 ]; then
+              echo "✅ Successfully deployed $func_name"
+            else
+              echo "❌ Failed to deploy $func_name"
+              exit 1
+            fi
+          done
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
