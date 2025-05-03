@@ -136,19 +136,33 @@ serve(async (req) => {
       inputs.sender = payload.sender.login || "Unknown";
     }
 
-    // Load workflow mapping from JSON file
+    // Load workflow mapping from environment variable
+    const WORKFLOW_MAPPINGS = Deno.env.get("WORKFLOW_MAPPINGS");
+    if (!WORKFLOW_MAPPINGS) {
+      console.error("Missing WORKFLOW_MAPPINGS environment variable");
+      return new Response(
+        JSON.stringify({ error: "Server configuration error: missing workflow mappings" }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Parse the workflow mappings from the environment variable
+    // Format: "repo1:workflow1,repo2:workflow2,repo3:workflow3"
+    const workflowMapping: Record<string, string> = {};
     try {
-      // Get the directory of the current module
-      const currentModuleUrl = new URL(import.meta.url);
-      const currentDir = new URL(".", currentModuleUrl).pathname;
+      const mappings = WORKFLOW_MAPPINGS.split(",");
+      for (const mapping of mappings) {
+        const [repo, workflow] = mapping.split(":");
+        if (repo && workflow) {
+          workflowMapping[repo.trim()] = workflow.trim();
+        }
+      }
 
-      // Construct the path to the workflow mapping file
-      const workflowMappingPath = `${currentDir}workflow-mapping.json`;
-      console.log(`Loading workflow mapping from: ${workflowMappingPath}`);
+      console.log(`Parsed workflow mappings: ${Object.keys(workflowMapping).join(", ")}`);
 
-      // Read the workflow mapping JSON file
-      const workflowMappingText = await Deno.readTextFile(workflowMappingPath);
-      const workflowMapping = JSON.parse(workflowMappingText);
+      if (Object.keys(workflowMapping).length === 0) {
+        throw new Error("No valid mappings found");
+      }
 
       // Look up the workflow filename for this repository
       if (repositoryFullName && workflowMapping[repositoryFullName]) {
