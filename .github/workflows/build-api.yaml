@@ -9,6 +9,11 @@ on:
         required: false
         default: '["18.20.2", "18", "20", "22", "lts/*", "node"]'
         type: string
+      upload-artifact:
+        description: 'Upload build artifact'
+        required: false
+        default: false
+        type: boolean
 
 env:
   API_DIR: api
@@ -39,3 +44,10 @@ jobs:
       - name: Build API
         run: npm run build
         working-directory: ${{ env.API_DIR }}
+
+      - name: Upload API build artifact
+        if: ${{ inputs.upload-artifact == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-dist
+          path: api/dist
