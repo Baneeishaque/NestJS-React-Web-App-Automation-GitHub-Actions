@@ -36,6 +36,16 @@ jobs:
         run: zip -r dist.zip dist
         working-directory: crm-api
 
+      - name: Ensure target directory exists and is writable
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ github.event.inputs.server_user }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            sudo mkdir ~/crm
+            sudo chown $USER:$USER ~/crm
+
       - name: Copy dist.zip to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -94,6 +104,16 @@ jobs:
       - name: Zip dist contents as client-dist.zip
         run: cd dist && zip -r ../client-dist.zip . && cd ..
         working-directory: crm-web
+
+      - name: Ensure web target directory exists and is writable
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ github.event.inputs.server_user }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            sudo mkdir -p ~/crm/client
+            sudo chown $USER:$USER ~/crm/client
 
       - name: Copy client-dist.zip to server
         uses: appleboy/scp-action@v0.1.7
