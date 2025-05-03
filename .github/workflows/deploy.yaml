@@ -104,6 +104,8 @@ jobs:
       - name: Build Web
         run: npm run build
         working-directory: ${{ env.WEB_DIR }}
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Zip dist contents as client-dist.zip
         run: cd dist && zip -r ../${{ env.WEB_ZIP_NAME }} . && cd ..
