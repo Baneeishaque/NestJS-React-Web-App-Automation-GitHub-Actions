@@ -79,6 +79,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-api
     steps:
+      - name: Download Web project artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web
+          path: web
+
       - name: Set production baseURL in axios.js
         run: |
           sed -i.bak 's|baseURL: "http://localhost:3000/",|baseURL: "/",|g' src/axios/axios.js
