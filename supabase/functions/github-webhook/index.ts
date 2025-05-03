@@ -138,8 +138,16 @@ serve(async (req) => {
 
     // Load workflow mapping from JSON file
     try {
+      // Get the directory of the current module
+      const currentModuleUrl = new URL(import.meta.url);
+      const currentDir = new URL(".", currentModuleUrl).pathname;
+
+      // Construct the path to the workflow mapping file
+      const workflowMappingPath = `${currentDir}workflow-mapping.json`;
+      console.log(`Loading workflow mapping from: ${workflowMappingPath}`);
+
       // Read the workflow mapping JSON file
-      const workflowMappingText = await Deno.readTextFile("./workflow-mapping.json");
+      const workflowMappingText = await Deno.readTextFile(workflowMappingPath);
       const workflowMapping = JSON.parse(workflowMappingText);
 
       // Look up the workflow filename for this repository
