@@ -21,7 +21,7 @@ jobs:
     needs: build-api
     with:
       node-version: '["18.20.2"]'
-      skip-build: true
+      upload-artifact: true
     secrets: inherit
 
   deploy-api:
