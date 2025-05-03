@@ -1,0 +1,31 @@
+name: Build CRM Web
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-web:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.20.2, 18, 20, 22, 'lts/*', 'node']
+    steps:
+      - name: Checkout crm-web repository
+        uses: actions/checkout@v4
+        with:
+          repository: lucidcraft-in/crm-web
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          path: crm-web
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: crm-web
+
+      - name: Build Web
+        run: npm run build
+        working-directory: crm-web
