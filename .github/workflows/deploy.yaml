@@ -55,7 +55,7 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "api/dist.zip"
-          target: "/home/${{ github.event.inputs.server_user }}/${{ secrets.APP_NAME }}/"
+          target: "/home/${{ github.event.inputs.server_user }}/"
           overwrite: true
 
       - name: SSH Deploy API
@@ -75,8 +75,8 @@ jobs:
       - name: Download Web project artifact
         uses: actions/download-artifact@v4
         with:
-          name: crm-web-project
-          path: crm-web
+          name: web
+          path: web
 
       - name: Set production baseURL in axios.js
         run: |
@@ -89,7 +89,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: crm-web
+        working-directory: web
 
       - name: Build Web (production)
         run: npm run build
@@ -128,11 +128,9 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ~/${{ secrets.APP_NAME }} || exit 1
-            if [ -f client-dist.zip ]; then
-              cd client || exit 1
-              sudo unzip -o ../client-dist.zip
-              cd ..
+            cd ~/${{ secrets.APP_NAME }}/client || exit 1
+            if [ -f ~/${{ secrets.APP_NAME }}-web/client-dist.zip ]; then
+              sudo unzip -o ~/${{ secrets.APP_NAME }}-web/client-dist.zip
             else
               echo "client-dist.zip not found!"
               exit 1
