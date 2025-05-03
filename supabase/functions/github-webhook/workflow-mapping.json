@@ -1,0 +1,5 @@
+{
+  "lucidcraft-in/crm-web": "build-web.yaml",
+  "lucidcraft-in/crm-api": "build-api.yaml",
+  "lucidcraft-in/scalup-crm-app": "deploy.yaml"
+}
