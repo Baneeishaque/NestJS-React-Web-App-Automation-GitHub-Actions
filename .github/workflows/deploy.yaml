@@ -13,6 +13,7 @@ jobs:
     uses: ./.github/workflows/build-api.yaml
     with:
       node-version: '["18.20.2"]'
+      upload-artifact: true
     secrets: inherit
 
   build-web:
@@ -20,15 +21,22 @@ jobs:
     needs: build-api
     with:
       node-version: '["18.20.2"]'
+      skip-build: true
     secrets: inherit
 
   deploy-api:
     runs-on: ubuntu-latest
     needs: build-web
     steps:
+      - name: Download API build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: api-dist
+          path: api/dist
+
       - name: Zip dist folder
         run: zip -r dist.zip dist
-        working-directory: crm-api
+        working-directory: api
 
       - name: Ensure target directory exists and is writable
         uses: appleboy/ssh-action@v1.2.2
@@ -37,8 +45,8 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            sudo mkdir -p ~/crm
-            sudo chown $USER:$USER ~/crm
+            sudo mkdir -p ~/${{ secrets.APP_NAME }}
+            sudo chown $USER:$USER ~/${{ secrets.APP_NAME }}
 
       - name: Copy dist.zip to server
         uses: appleboy/scp-action@v1.0.0
@@ -46,8 +54,8 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "crm-api/dist.zip"
-          target: "/home/${{ github.event.inputs.server_user }}/crm/"
+          source: "api/dist.zip"
+          target: "/home/${{ github.event.inputs.server_user }}/${{ secrets.APP_NAME }}/"
           overwrite: true
 
       - name: SSH Deploy API
@@ -57,7 +65,7 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ~/crm || exit 1
+            cd ~/${{ secrets.APP_NAME }} || exit 1
             if [ -f dist.zip ]; then sudo unzip -o dist.zip; else echo "dist.zip not found!"; exit 1; fi
 
   deploy-web:
@@ -67,21 +75,21 @@ jobs:
       - name: Set production baseURL in axios.js
         run: |
           sed -i.bak 's|baseURL: "http://localhost:3000/",|baseURL: "/",|g' src/axios/axios.js
-        working-directory: crm-web
+        working-directory: web
 
       - name: Show axios baseURL for verification
         run: grep baseURL src/axios/axios.js
-        working-directory: crm-web
+        working-directory: web
 
       - name: Build Web (production)
         run: npm run build
-        working-directory: crm-web
+        working-directory: web
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Zip dist contents as client-dist.zip
         run: cd dist && zip -r ../client-dist.zip . && cd ..
-        working-directory: crm-web
+        working-directory: web
 
       - name: Ensure web target directory exists and is writable
         uses: appleboy/ssh-action@v1.2.2
@@ -90,8 +98,8 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            sudo mkdir -p ~/crm/client
-            sudo chown $USER:$USER ~/crm/client
+            sudo mkdir -p ~/${{ secrets.APP_NAME }}/client
+            sudo chown $USER:$USER ~/${{ secrets.APP_NAME }}/client
 
       - name: Copy client-dist.zip to server
         uses: appleboy/scp-action@v1.0.0
@@ -99,8 +107,8 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "crm-web/client-dist.zip"
-          target: "/home/${{ github.event.inputs.server_user }}/crm/client/"
+          source: "web/client-dist.zip"
+          target: "/home/${{ github.event.inputs.server_user }}/${{ secrets.APP_NAME }}/client/"
           overwrite: true
 
       - name: SSH Deploy Web
@@ -110,7 +118,7 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ~/crm/client || exit 1
+            cd ~/${{ secrets.APP_NAME }}/client || exit 1
             if [ -f client-dist.zip ]; then sudo unzip -o client-dist.zip; else echo "client-dist.zip not found!"; exit 1; fi
 
   restart-services:

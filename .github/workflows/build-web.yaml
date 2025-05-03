@@ -9,6 +9,11 @@ on:
         required: false
         default: '["18.20.2", "18", "20", "22", "lts/*", "node"]'
         type: string
+      skip-build:
+        description: 'Skip npm run build step'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   build-web:
@@ -34,6 +39,7 @@ jobs:
         working-directory: web
 
       - name: Build Web (dev/test)
+        if: ${{ inputs.skip-build != true }}
         run: npm run build
         working-directory: web
         env:
