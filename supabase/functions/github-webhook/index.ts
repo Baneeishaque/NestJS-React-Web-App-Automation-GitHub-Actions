@@ -1,6 +1,16 @@
 // supabase/functions/github-webhook/index.ts
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
+interface GitHubUser {
+  login: string;
+  [key: string]: any; // For other properties we don't care about
+}
+
+interface GitHubLabel {
+  name: string;
+  [key: string]: any;
+}
+
 serve(async (req) => {
   try {
     // 1. Extract and validate webhook data
@@ -98,10 +108,14 @@ serve(async (req) => {
       console.log(`Detected default branch for workflow repo: ${workflowBranch}`);
     } catch (error) {
       console.error("Error fetching automation repository info:", error);
+
+      // Type check the error before accessing its properties
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
       return new Response(
         JSON.stringify({
           error: "Failed to fetch automation repository metadata",
-          message: error.message
+          message: errorMessage
         }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
@@ -246,9 +260,9 @@ serve(async (req) => {
           pr_body: payload.pull_request.body?.substring(0, 500) || "", // Limit size
           pr_created_at: payload.pull_request.created_at || "",
           pr_updated_at: payload.pull_request.updated_at || "",
-          pr_assignees: payload.pull_request.assignees?.map((a) => a.login).join(",") || "",
-          pr_requested_reviewers: payload.pull_request.requested_reviewers?.map((r) => r.login).join(",") || "",
-          pr_labels: payload.pull_request.labels?.map((l) => l.name).join(",") || "",
+          pr_assignees: payload.pull_request.assignees?.map((a: GitHubUser) => a.login).join(",") || "",
+          pr_requested_reviewers: payload.pull_request.requested_reviewers?.map((r: GitHubUser) => r.login).join(",") || "",
+          pr_labels: payload.pull_request.labels?.map((l: GitHubLabel) => l.name).join(",") || "",
           pr_draft: payload.pull_request.draft ? "true" : "false",
           pr_state: payload.pull_request.state || "",
           pr_merged: payload.pull_request.merged ? "true" : "false",
@@ -305,8 +319,12 @@ serve(async (req) => {
       });
     } catch (error) {
       console.error("Network error triggering workflow:", error);
+
+      // Type check the error before accessing its properties
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
       return new Response(
-        JSON.stringify({ error: "Network error", message: error.message }),
+        JSON.stringify({ error: "Network error", message: errorMessage }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
@@ -355,13 +373,18 @@ serve(async (req) => {
       );
     }
   } catch (error) {
-    // Catch-all for unexpected errors
+   // Catch-all for unexpected errors
     console.error("Unexpected error processing webhook:", error);
+
+    // Type checking for the error object
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
     return new Response(
       JSON.stringify({
         error: "Server error",
-        message: error.message,
-        stack: Deno.env.get("ENVIRONMENT") === "development" ? error.stack : undefined
+        message: errorMessage,
+        stack: Deno.env.get("ENVIRONMENT") === "development" ? errorStack : undefined
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
