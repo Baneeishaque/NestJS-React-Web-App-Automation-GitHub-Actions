@@ -1,3 +1,5 @@
+[![Deploy API & Web](https://github.com/Baneeishaque/NestJS-React-Web-App-Automation-GitHub-Actions/actions/workflows/deploy.yaml/badge.svg)](https://github.com/Baneeishaque/NestJS-React-Web-App-Automation-GitHub-Actions/actions/workflows/deploy.yaml)
+
 # NestJS Backed React Web App. Automation
 
 This repository contains the codebase and deployment workflow for a NestJS Backed React Web App. Automation project, including:
