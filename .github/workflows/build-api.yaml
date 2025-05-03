@@ -2,6 +2,43 @@ name: Build API
 
 on:
   workflow_dispatch:
+    inputs:
+      event_type:
+        description: 'GitHub event type that triggered the workflow'
+        required: false
+        type: string
+      timestamp:
+        description: 'Timestamp when the event was processed'
+        required: false
+        type: string
+      repository:
+        description: 'Repository full name'
+        required: false
+        type: string
+      sender:
+        description: 'GitHub username of event sender'
+        required: false
+        type: string
+      branch:
+        description: 'Branch name'
+        required: false
+        type: string
+      author:
+        description: 'Commit author or PR creator'
+        required: false
+        type: string
+      commit_sha:
+        description: 'Commit SHA'
+        required: false
+        type: string
+      commit_message:
+        description: 'Commit message'
+        required: false
+        type: string
+      commit_url:
+        description: 'URL to the commit'
+        required: false
+        type: string
   workflow_call:
     inputs:
       node-version:
@@ -25,12 +62,23 @@ jobs:
       matrix:
         node-version: ${{ fromJson(inputs.node-version || '["18.20.8", "16", "18.20.2", "18", "20", "22", "lts/*", "node"]') }}
     steps:
+      - name: Get default branch if not specified
+        id: get-branch
+        if: ${{ !inputs.branch }}
+        run: |
+          DEFAULT_BRANCH=$(gh api repos/${{ secrets.API_REPO }} --jq '.default_branch')
+          echo "Using default branch: $DEFAULT_BRANCH"
+          echo "branch=$DEFAULT_BRANCH" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+
       - name: Checkout api repository
         uses: actions/checkout@v4.2.2
         with:
           repository: ${{ secrets.API_REPO }}
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           path: ${{ env.API_DIR }}
+          ref: ${{ inputs.branch || steps.get-branch.outputs.branch }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4.4.0
