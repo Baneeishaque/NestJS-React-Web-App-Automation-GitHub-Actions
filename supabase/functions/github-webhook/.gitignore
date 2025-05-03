@@ -1,0 +1,7 @@
+# Protect sensitive workflow mapping configuration
+workflow-mapping.json
+
+# Environment files
+.env
+.env.local
+.env.*.local

@@ -1,0 +1,5 @@
+{
+  "your-org/your-repo-1": "build-web.yaml",
+  "your-org/your-repo-2": "build-api.yaml",
+  "your-org/your-repo-3": "build-app.yaml"
+}
