@@ -18,7 +18,7 @@ jobs:
   build-api:
     uses: ./.github/workflows/build-api.yaml
     with:
-      node-version: '["18.20.2"]'
+      node-version: '["18.20.8"]'
       upload-artifact: true
     secrets: inherit
 
@@ -26,7 +26,7 @@ jobs:
     uses: ./.github/workflows/build-web.yaml
     needs: build-api
     with:
-      node-version: '["18.20.2"]'
+      node-version: '["18.20.8"]'
       upload-artifact: true
       skip-build: true
     secrets: inherit
