@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'supabase/functions/**'
-      - 'scripts/manage-webhooks.js'
+      - 'scripts/**'
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
