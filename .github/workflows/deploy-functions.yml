@@ -1,24 +1,19 @@
 name: Deploy Supabase Edge Functions and Manage Webhooks
 
-# Define common configuration
-env:
-  # List of branches to watch
-  TARGET_BRANCHES: |
-    main
-  
-  # List of paths to watch
-  WATCHED_PATHS: |
-    supabase/functions/**
-    scripts/**
-
 on:
   push:
-    branches: ${{ env.TARGET_BRANCHES }}
-    paths: ${{ env.WATCHED_PATHS }}
+    branches:
+      - main
+    paths:
+      - 'supabase/functions/**'
+      - 'scripts/**'
   
   pull_request:
-    branches: ${{ env.TARGET_BRANCHES }}
-    paths: ${{ env.WATCHED_PATHS }}
+    branches:
+      - main
+    paths:
+      - 'supabase/functions/**'
+      - 'scripts/**'
   
   workflow_dispatch:
 
