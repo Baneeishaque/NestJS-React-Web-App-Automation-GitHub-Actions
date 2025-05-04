@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ${{ fromJson(inputs.node-version || '["18.20.8", "16", "18.20.2", "18", "20", "22", "lts/*", "node"]') }}
+        node-version: ${{ fromJson(inputs.node-version || '["18.20.8", "16", "18", "20", "22", "lts/*", "node"]') }}
     steps:
       - name: Get default branch if not specified
         id: get-branch
