@@ -24,6 +24,7 @@ const GITHUB_TOKEN = process.env.OWNER_GITHUB_TOKEN;
 const SUPABASE_PROJECT_REF = process.env.SUPABASE_PROJECT_REF;
 const WEBHOOK_URL = `https://${SUPABASE_PROJECT_REF}.supabase.co/functions/v1/github-webhook`;
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || '';
+const DRY_RUN = process.env.DRY_RUN === 'true';
 
 // Repositories to manage webhooks for
 const repositories = process.env.REPOSITORIES
@@ -91,6 +92,10 @@ function githubRequest(method, path, data = null) {
 
 // Check existing webhooks and create if needed
 async function manageWebhooks() {
+  if (DRY_RUN) {
+    console.log('🚧 DRY RUN MODE: No changes will be made to webhooks\n');
+  }
+
   for (const repo of repositories) {
     console.log(`\n=== Checking webhooks for ${repo} ===`);
 
@@ -112,43 +117,49 @@ async function manageWebhooks() {
           existingHook.events.includes('pull_request');
 
         if (!hasRequiredEvents) {
-          console.log(`⚠️ Updating events for webhook in ${repo}`);
-          await githubRequest('PATCH', `/repos/${repo}/hooks/${existingHook.id}`, {
-            events: ['push', 'pull_request']
-          });
-          console.log(`✅ Updated events for webhook in ${repo}`);
+          console.log(`⚠️ [${DRY_RUN ? 'WOULD UPDATE' : 'UPDATING'}] events for webhook in ${repo}`);
+          if (!DRY_RUN) {
+            await githubRequest('PATCH', `/repos/${repo}/hooks/${existingHook.id}`, {
+              events: ['push', 'pull_request']
+            });
+            console.log(`✅ Updated events for webhook in ${repo}`);
+          }
         }
 
         // Ensure webhook is active
         if (!existingHook.active) {
-          console.log(`⚠️ Webhook is inactive for ${repo}, activating...`);
-          await githubRequest('PATCH', `/repos/${repo}/hooks/${existingHook.id}`, {
-            active: true
-          });
-          console.log(`✅ Activated webhook for ${repo}`);
+          console.log(`⚠️ [${DRY_RUN ? 'WOULD ACTIVATE' : 'ACTIVATING'}] webhook for ${repo}`);
+          if (!DRY_RUN) {
+            await githubRequest('PATCH', `/repos/${repo}/hooks/${existingHook.id}`, {
+              active: true
+            });
+            console.log(`✅ Activated webhook for ${repo}`);
+          }
         }
       } else {
-        console.log(`⚠️ No webhook found for ${repo}, creating...`);
+        console.log(`⚠️ [${DRY_RUN ? 'WOULD CREATE' : 'CREATING'}] webhook for ${repo}`);
+        
+        if (!DRY_RUN) {
+          // Create webhook with proper configuration
+          const webhookConfig = {
+            name: 'web',
+            active: true,
+            events: ['push', 'pull_request'],
+            config: {
+              url: WEBHOOK_URL,
+              content_type: 'json',
+              insecure_ssl: '0'
+            }
+          };
 
-        // Create webhook with proper configuration
-        const webhookConfig = {
-          name: 'web',
-          active: true,
-          events: ['push', 'pull_request'],
-          config: {
-            url: WEBHOOK_URL,
-            content_type: 'json',
-            insecure_ssl: '0'
+          // Add secret if provided
+          if (WEBHOOK_SECRET) {
+            webhookConfig.config.secret = WEBHOOK_SECRET;
           }
-        };
 
-        // Add secret if provided
-        if (WEBHOOK_SECRET) {
-          webhookConfig.config.secret = WEBHOOK_SECRET;
+          await githubRequest('POST', `/repos/${repo}/hooks`, webhookConfig);
+          console.log(`✅ Created webhook for ${repo}`);
         }
-
-        await githubRequest('POST', `/repos/${repo}/hooks`, webhookConfig);
-        console.log(`✅ Created webhook for ${repo}`);
       }
     } catch (error) {
       console.error(`❌ Error managing webhook for ${repo}:`, error.message);
@@ -156,7 +167,11 @@ async function manageWebhooks() {
     }
   }
 
-  console.log('\n✅ All webhooks successfully configured!');
+  if (DRY_RUN) {
+    console.log('\n✅ Dry run completed. No changes were made.');
+  } else {
+    console.log('\n✅ All webhooks successfully configured!');
+  }
 }
 
 manageWebhooks().catch(error => {

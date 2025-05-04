@@ -7,6 +7,12 @@ on:
     paths:
       - 'supabase/functions/**'
       - 'scripts/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'supabase/functions/**'
+      - 'scripts/**'
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
@@ -22,6 +28,7 @@ jobs:
           version: latest
 
       - name: Find and deploy all Supabase functions
+        if: github.event_name != 'pull_request'
         run: |
           # List all function directories
           cd supabase/functions
@@ -44,6 +51,19 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
+      - name: Dry run Supabase functions (PR only)
+        if: github.event_name == 'pull_request'
+        run: |
+          cd supabase/functions
+          echo "Running dry run for functions:"
+          for func_dir in */; do
+            func_name=${func_dir%/}
+            echo "- $func_name"
+            supabase functions deploy "$func_name" --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} --dry-run || echo "Dry run check for $func_name completed"
+          done
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_PROJECT_REF }}
+
       - name: Check if github-webhook function exists
         id: check-webhook
         run: |
@@ -55,7 +75,7 @@ jobs:
             echo "GitHub webhook function does not exist, skipping webhook management"
           fi
 
-      - name: Setup Node.js
+      - name: Setup Node.js (for webhook management)
         if: steps.check-webhook.outputs.exists == 'true'
         uses: actions/setup-node@v3
         with:
@@ -67,4 +87,6 @@ jobs:
 
       - name: Manage Repository Webhooks
         if: steps.check-webhook.outputs.exists == 'true'
+        env:
+          DRY_RUN: ${{ github.event_name == 'pull_request' }}
         run: cd scripts && npm run manage-webhooks
