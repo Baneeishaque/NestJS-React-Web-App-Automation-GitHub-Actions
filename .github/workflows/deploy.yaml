@@ -153,5 +153,5 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd ~/crm
-            pm2 restart crm || pm2 start dist/main.js --name crm
+            pm2 restart main || pm2 start dist/main.js --name main
             sudo systemctl restart nginx
