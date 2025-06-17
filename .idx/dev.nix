@@ -3,6 +3,7 @@
 
   packages = [
     pkgs.git-filter-repo
+    pkgs.mise
   ];
 
   env = { };
