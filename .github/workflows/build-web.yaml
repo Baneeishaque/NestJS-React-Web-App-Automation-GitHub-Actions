@@ -70,7 +70,7 @@ jobs:
           GH_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
 
       - name: Checkout web repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
         with:
           repository: ${{ secrets.WEB_REPO }}
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
