@@ -107,8 +107,7 @@ jobs:
         working-directory: ${{ env.WEB_DIR }}
 
       - name: Build Web (dev/test)
-        if: ${{ inputs.upload-artifact != true }}
-        if: ${{ inputs.skip-build != true }}
+        if: ${{ inputs.upload-artifact != true && inputs.skip-build != true }}
         run: npm run build
         working-directory: ${{ env.WEB_DIR }}
         env:
