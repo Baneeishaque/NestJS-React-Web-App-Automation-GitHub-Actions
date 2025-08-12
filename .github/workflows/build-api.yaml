@@ -107,7 +107,7 @@ jobs:
 
       - name: Upload API build artifact
         if: ${{ inputs.upload-artifact == true }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: api-dist
           path: api/dist
