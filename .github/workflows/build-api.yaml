@@ -69,6 +69,7 @@ jobs:
 
       - name: Install GitHub CLI (official)
         run: bash bash_scripts/installGitHubCli.bash
+
       - name: Get default branch if not specified
         id: get-branch
         if: ${{ !inputs.branch }}
