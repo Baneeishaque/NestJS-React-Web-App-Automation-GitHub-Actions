@@ -27,9 +27,19 @@
     "*.secrects*": "dotenv"
   },
   "cSpell.words": [
+    "choco",
     "dpkg",
     "githubcli",
+    "guix",
     "keyrings",
-    "mktemp"
+    "ltrace",
+    "mktemp",
+    "MSYS",
+    "nslookup",
+    "pacman",
+    "rustc",
+    "subshell",
+    "traceroute",
+    "winget"
   ]
 }
