@@ -25,5 +25,11 @@
   "IDX.aI.enableCodebaseIndexing": true,
   "files.associations": {
     "*.secrects*": "dotenv"
-  }
+  },
+  "cSpell.words": [
+    "dpkg",
+    "githubcli",
+    "keyrings",
+    "mktemp"
+  ]
 }
