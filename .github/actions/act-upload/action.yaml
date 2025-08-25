@@ -1,0 +1,19 @@
+# .github/actions/act-upload/action.yaml
+name: 'Simulate ACT Upload'
+description: 'Simulate artifact upload for ACT'
+inputs:
+  name:
+    required: true
+  source:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Simulate artifact upload (ACT)
+      if: ${{ env.ACT == 'true' }}
+      shell: bash
+      run: |
+        # Use /tmp for shared artifacts across ACT jobs
+        mkdir -p "/tmp/act-artifacts/${{ inputs.name }}"
+        cp -r "${{ inputs.source }}/." "/tmp/act-artifacts/${{ inputs.name }}/"
+        echo "Uploaded artifact ${{ inputs.name }} to /tmp/act-artifacts/${{ inputs.name }}"

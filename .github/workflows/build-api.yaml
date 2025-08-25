@@ -101,9 +101,20 @@ jobs:
         run: npm run build
         working-directory: ${{ env.API_DIR }}
 
-      - name: Upload API build artifact
-        if: ${{ inputs.upload-artifact == true }}
+      - name: Upload API build artifact (GH only)
+        if: ${{ inputs.upload-artifact == true && env.ACT != 'true' }}
         uses: actions/upload-artifact@v4.6.2
         with:
           name: api-dist
           path: api/dist
+
+      - name: Setup Rsync
+        if: ${{ inputs.upload-artifact == true && env.ACT == 'true' }}
+        uses: GuillaumeFalourd/setup-rsync@v1.2
+
+      - name: Simulate artifact upload (ACT)
+        if: ${{ inputs.upload-artifact == true && env.ACT == 'true' }}
+        uses: ./.github/actions/act-upload
+        with:
+          name: api-dist
+          source: api/dist

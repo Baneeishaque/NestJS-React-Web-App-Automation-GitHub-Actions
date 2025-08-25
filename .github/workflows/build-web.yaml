@@ -109,9 +109,20 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
-      - name: Upload Web project artifact
-        if: ${{ inputs.upload-artifact == true }}
+      - name: Upload Web project artifact (GH only)
+        if: ${{ inputs.upload-artifact == true && env.ACT != 'true' }}
         uses: actions/upload-artifact@v4.6.2
         with:
           name: web
           path: web
+
+      - name: Setup Rsync
+        if: ${{ inputs.upload-artifact == true && env.ACT == 'true' }}
+        uses: GuillaumeFalourd/setup-rsync@v1.2
+
+      - name: Simulate artifact upload (ACT)
+        if: ${{ inputs.upload-artifact == true && env.ACT == 'true' }}
+        uses: ./.github/actions/act-upload
+        with:
+          name: web
+          source: web

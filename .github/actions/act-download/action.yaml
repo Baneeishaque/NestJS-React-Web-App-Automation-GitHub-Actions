@@ -1,0 +1,20 @@
+# .github/actions/act-download/action.yaml
+name: 'Simulate ACT Download'
+description: 'Simulate artifact download for ACT'
+inputs:
+  name:
+    required: true
+  target:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Simulate artifact download (ACT)
+      if: ${{ env.ACT == 'true' }}
+      shell: bash
+      run: |
+        # Use /tmp for shared artifacts across ACT jobs
+        test -d "/tmp/act-artifacts/${{ inputs.name }}" || { echo "Missing /tmp/act-artifacts/${{ inputs.name }}"; exit 1; }
+        mkdir -p "${{ inputs.target }}"
+        cp -r "/tmp/act-artifacts/${{ inputs.name }}/." "${{ inputs.target }}/"
+        echo "Downloaded artifact ${{ inputs.name }} from /tmp/act-artifacts/${{ inputs.name }} to ${{ inputs.target }}"
