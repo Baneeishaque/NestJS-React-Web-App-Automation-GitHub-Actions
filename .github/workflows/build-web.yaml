@@ -67,18 +67,14 @@ jobs:
       matrix:
         node-version: ${{ fromJson(inputs.node-version || '["18.20.8", "16", "18", "20", "22", "lts/*", "node"]') }}
     steps:
+      - name: Checkout main repository (with submodules)
+        uses: actions/checkout@v4.2.2
+        with:
+          submodules: true
+
       - name: Install GitHub CLI (official)
-        run: |
-          type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)
-          sudo mkdir -p -m 755 /etc/apt/keyrings
-          out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg
-          cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
-          sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
-          sudo mkdir -p -m 755 /etc/apt/sources.list.d
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | \
-            sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-          sudo apt update
-          sudo apt install gh -y
+        run: bash bash_scripts/installGitHubCli.bash
+
       - name: Get default branch if not specified
         id: get-branch
         if: ${{ !inputs.branch }}

@@ -1,0 +1,3 @@
+[submodule "bash_scripts"]
+	path = bash_scripts
+	url = https://github.com/Baneeishaque/Bash_Scripts.git
