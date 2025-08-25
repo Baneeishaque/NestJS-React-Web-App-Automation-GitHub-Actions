@@ -27,9 +27,13 @@
     "*.secrects*": "dotenv"
   },
   "cSpell.words": [
+    "appleboy",
+    "axios",
     "choco",
     "dpkg",
+    "Falourd",
     "githubcli",
+    "Guillaume",
     "guix",
     "keyrings",
     "ltrace",
