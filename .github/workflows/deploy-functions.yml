@@ -41,6 +41,7 @@ jobs:
 
       - name: Install PowerShell Preview
         uses: PSModule/install-powershell@v1
+        if: ${{ env.ACT == true }}
         with:
           Version: 7.5.2
 
