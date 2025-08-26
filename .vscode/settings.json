@@ -24,7 +24,9 @@
   "IDX.aI.enableInlineCompletion": true,
   "IDX.aI.enableCodebaseIndexing": true,
   "files.associations": {
-    "*.secrects*": "dotenv"
+    "*.secrets*": "dotenv",
+    "*.toml.*": "toml",
+    "*.json.*": "json"
   },
   "cSpell.words": [
     "appleboy",
@@ -41,12 +43,10 @@
     "MSYS",
     "nslookup",
     "pacman",
+    "pwsh",
     "rustc",
     "subshell",
     "traceroute",
     "winget"
-  ],
-  "files.associations": {
-    "*.secrects*": "dotenv"
-  }
+  ]
 }
