@@ -21,6 +21,10 @@
     "quentinguidee.gitignore-ultimate",
     "tomoki1207.pdf"
   ],
+  "onlyGitpodSupported": [
+    "lang2hong.githd",
+    "solomonkinard.git-files"
+  ],
   "onlyVscodeSupported": [
     "github.copilot",
     "github.copilot-chat",
