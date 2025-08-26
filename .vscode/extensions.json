@@ -11,6 +11,12 @@
     "shd101wyy.markdown-preview-enhanced",
     "taichikubo.dired-plus"
   ],
+  "gitpodAlternativeRecommendations": [
+    "fittentech.fitten-code",
+    "ms-azuretools.vscode-containers",
+    "nick-rudenko.back-n-forth",
+    "vscode.github-authentication"
+  ],
   "onlyDesktopSupported": [
     "quentinguidee.gitignore-ultimate",
     "tomoki1207.pdf"
