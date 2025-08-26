@@ -79,6 +79,7 @@ jobs:
           echo "branch=$DEFAULT_BRANCH" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+        shell: bash
 
       - name: Checkout api repository
         uses: actions/checkout@v4.2.2
