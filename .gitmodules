@@ -1,3 +1,6 @@
 [submodule "bash_scripts"]
 	path = bash_scripts
 	url = https://github.com/Baneeishaque/Bash_Scripts.git
+[submodule "powershell_scripts"]
+	path = powershell_scripts
+	url = https://github.com/Baneeishaque/PowerShell_Scripts.git
