@@ -59,7 +59,7 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 1.110.1
 
       - name: Find and deploy all Supabase functions
         if: github.event_name != 'pull_request'
