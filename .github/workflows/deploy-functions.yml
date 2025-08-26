@@ -64,23 +64,7 @@ jobs:
       - name: Find and deploy all Supabase functions
         if: github.event_name != 'pull_request'
         run: |
-          # Find all function directories inside supabase/functions
-          for func_dir in supabase/functions/*/; do
-            # Extract function name from the directory path
-            func_name=$(basename "$func_dir")
-            echo "Deploying function: $func_name"
-
-            # Deploy the function
-            supabase functions deploy "$func_name" --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
-
-            # Check if deployment was successful
-            if [ $? -eq 0 ]; then
-              echo "✅ Successfully deployed $func_name"
-            else
-              echo "❌ Failed to deploy $func_name"
-              exit 1
-            fi
-          done
+          supabase functions deploy --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         shell: bash
@@ -88,14 +72,7 @@ jobs:
       - name: Dry run Supabase functions (PR only)
         if: github.event_name == 'pull_request'
         run: |
-          echo "Running dry run for functions:"
-          # Find all function directories inside supabase/functions
-          for func_dir in supabase/functions/*/; do
-            # Extract function name from the directory path
-            func_name=$(basename "$func_dir")
-            echo "- $func_name"
-            supabase functions deploy "$func_name" --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} --dry-run || echo "Dry run check for $func_name completed"
-          done
+          supabase functions deploy --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} --dry-run
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         shell: bash
