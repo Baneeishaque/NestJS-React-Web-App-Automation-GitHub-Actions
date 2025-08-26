@@ -64,11 +64,10 @@ jobs:
       - name: Find and deploy all Supabase functions
         if: github.event_name != 'pull_request'
         run: |
-          # List all function directories
-          cd supabase/functions
-          for func_dir in */; do
-            # Remove trailing slash
-            func_name=${func_dir%/}
+          # Find all function directories inside supabase/functions
+          for func_dir in supabase/functions/*/; do
+            # Extract function name from the directory path
+            func_name=$(basename "$func_dir")
             echo "Deploying function: $func_name"
 
             # Deploy the function
@@ -89,15 +88,16 @@ jobs:
       - name: Dry run Supabase functions (PR only)
         if: github.event_name == 'pull_request'
         run: |
-          cd supabase/functions
           echo "Running dry run for functions:"
-          for func_dir in */; do
-            func_name=${func_dir%/}
+          # Find all function directories inside supabase/functions
+          for func_dir in supabase/functions/*/; do
+            # Extract function name from the directory path
+            func_name=$(basename "$func_dir")
             echo "- $func_name"
             supabase functions deploy "$func_name" --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} --dry-run || echo "Dry run check for $func_name completed"
           done
         env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         shell: bash
 
       - name: Check if github-webhook function exists
