@@ -7,14 +7,14 @@ on:
     paths:
       - 'supabase/functions/**'
       - 'scripts/**'
-  
+
   pull_request:
     branches:
       - main
     paths:
       - 'supabase/functions/**'
       - 'scripts/**'
-  
+
   workflow_dispatch:
 
 jobs:
