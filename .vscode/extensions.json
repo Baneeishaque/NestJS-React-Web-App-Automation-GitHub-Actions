@@ -1,4 +1,25 @@
 {
+  "additionalRecommendations": [
+    "actionforge.actionforge",
+    "alphaxek.github-actions-locally",
+    "continue.continue",
+    "gocodeo.gocodeo",
+    "google.geminicodeassist",
+    "jwevans.jwe-markdown-enhanced",
+    "mushan.vscode-paste-image",
+    "nur-srijan.markdown-rich-preview",
+    "shd101wyy.markdown-preview-enhanced",
+    "taichikubo.dired-plus"
+  ],
+  "onlyDesktopSupported": [
+    "quentinguidee.gitignore-ultimate",
+    "tomoki1207.pdf"
+  ],
+  "onlyVscodeSupported": [
+    "github.copilot",
+    "github.copilot-chat",
+    "ms-vscode-remote.remote-containers"
+  ],
   "recommendations": [
     "bierner.markdown-preview-github-styles",
     "davidAnson.vscode-markdownlint",
@@ -36,26 +57,5 @@
     "yzhang.markdown-all-in-one",
     "zaaack.markdown-editor",
     "zainChen.json"
-  ],
-  "onlyVscodeSupported": [
-    "github.copilot",
-    "github.copilot-chat",
-    "ms-vscode-remote.remote-containers"
-  ],
-  "additionalRecommendations": [
-    "actionforge.actionforge",
-    "alphaxek.github-actions-locally",
-    "continue.continue",
-    "gocodeo.gocodeo",
-    "google.geminicodeassist",
-    "jwevans.jwe-markdown-enhanced",
-    "mushan.vscode-paste-image",
-    "nur-srijan.markdown-rich-preview",
-    "shd101wyy.markdown-preview-enhanced",
-    "taichikubo.dired-plus"
-  ],
-  "onlyDesktopSupported": [
-    "quentinguidee.gitignore-ultimate",
-    "tomoki1207.pdf"
   ]
 }
