@@ -23,6 +23,46 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Clone private configuration repository
+        run: |
+          PRIVATE_REPO_HOSTING_PROVIDER="${{ secrets.PRIVATE_REPO_HOSTING_PROVIDER }}"
+          PRIVATE_REPO_OWNER="${{ secrets.PRIVATE_REPO_OWNER }}"
+          PRIVATE_REPO_NAME="${{ secrets.PRIVATE_REPO_NAME }}"
+          PRIVATE_REPO_ACCESS_TOKEN="${{ secrets.PRIVATE_REPO_ACCESS_TOKEN }}"
+
+          CLONE_URL="https://${PRIVATE_REPO_OWNER}:${PRIVATE_REPO_ACCESS_TOKEN}@${PRIVATE_REPO_HOSTING_PROVIDER}/${PRIVATE_REPO_OWNER}/${PRIVATE_REPO_NAME}.git"
+
+          GIT_LFS_SKIP_SMUDGE=1 git clone --depth=1 --quiet "$CLONE_URL" private-config 2>/dev/null
+          echo "Private configuration repository cloned successfully"
+        shell: bash
+
+      - name: Install PowerShell Preview
+        uses: PSModule/install-powershell@v1
+        with:
+          Version: 7.5.2
+
+      - name: Replace example files with actual configuration files
+        run: |
+          if (-not $env:GITHUB_REPOSITORY) {
+            Write-Warning "GITHUB_REPOSITORY not set. If you're using ACT, add it via --env or .env file."
+          }
+          $repoName = $env:GITHUB_REPOSITORY.Split('/')[1]
+          if (-not $repoName -or $repoName.Trim() -eq "") {
+              Write-Error "Repository name could not be resolved from GITHUB_REPOSITORY. Ensure the environment variable is set correctly."
+              exit 1
+          }
+          $configFolder = "private-config/$repoName"
+          if (Test-Path $configFolder -PathType Container) {
+            Write-Host "Configuration folder found: $configFolder"
+            & ".\powershell_scripts\create-config-links.ps1" -ConfigFolder $configFolder -ReferenceFolder "."
+          } else {
+            Write-Error "Configuration repository $configFolder not found"
+            exit 1
+          }
+        shell: pwsh
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
