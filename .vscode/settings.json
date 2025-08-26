@@ -45,5 +45,8 @@
     "subshell",
     "traceroute",
     "winget"
-  ]
+  ],
+  "files.associations": {
+    "*.secrects*": "dotenv"
+  }
 }
