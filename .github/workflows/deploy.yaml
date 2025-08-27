@@ -129,10 +129,6 @@ jobs:
         working-directory: ${{ inputs.web_dir }}
 
       # TODO: Implement DRY
-      - name: Install dependencies
-        run: npm install
-        working-directory: ${{ inputs.web_dir }}
-
       - name: Build Web (production)
         run: npm run build
         working-directory: ${{ inputs.web_dir }}
@@ -156,7 +152,7 @@ jobs:
             ls
             sudo chown ${{ inputs.server_user }}:${{ inputs.server_user }} $APP_CLIENT_PATH
 
-      - name: Copy client-dist.zip to server
+      - name: Copy web-dist.zip to server
         uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.SERVER_HOST }}
