@@ -51,9 +51,11 @@ on:
         required: false
         default: false
         type: boolean
-
-env:
-  API_DIR: api
+      api-dir:
+        description: 'API directory'
+        required: false
+        default: 'api'
+        type: string
 
 jobs:
   build-api:
@@ -86,9 +88,10 @@ jobs:
         with:
           repository: ${{ secrets.API_REPO }}
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          path: ${{ env.API_DIR }}
+          path: ${{ inputs.api-dir }}
           ref: ${{ inputs.branch || steps.get-branch.outputs.branch }}
 
+      # TODO: Use mise based node
       - name: Set up Node.js
         uses: actions/setup-node@v4.4.0
         with:
@@ -96,15 +99,16 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ${{ env.API_DIR }}
+        working-directory: ${{ inputs.api-dir }}
 
       - name: Build API
         run: npm run build
-        working-directory: ${{ env.API_DIR }}
+        working-directory: ${{ inputs.api-dir }}
 
       - name: Upload API build artifact
         if: ${{ inputs.upload-artifact == true }}
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: api-dist
-          path: api/dist
+          # TODO: Use input variable with default value for dist
+          name: ${{ inputs.api-dir }}-dist
+          path: ${{ inputs.api-dir }}/dist

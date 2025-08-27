@@ -56,9 +56,11 @@ on:
         required: false
         default: false
         type: boolean
-
-env:
-  WEB_DIR: web
+      web-dir:
+        description: 'Web directory'
+        required: false
+        default: 'web'
+        type: string
 
 jobs:
   build-web:
@@ -67,6 +69,7 @@ jobs:
       matrix:
         node-version: ${{ fromJson(inputs.node-version || '["18.20.8", "16", "18", "20", "22", "lts/*", "node"]') }}
     steps:
+      # TODO: Implement DRY
       - name: Checkout main repository (with submodules)
         uses: actions/checkout@v4.2.2
         with:
@@ -91,7 +94,7 @@ jobs:
         with:
           repository: ${{ secrets.WEB_REPO }}
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          path: ${{ env.WEB_DIR }}
+          path: ${{ inputs.web-dir }}
           ref: ${{ inputs.branch || steps.get-branch.outputs.branch }}
 
       - name: Set up Node.js
@@ -101,18 +104,19 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ${{ env.WEB_DIR }}
+        working-directory: ${{ inputs.web-dir }}
 
       - name: Build Web (dev/test)
         if: ${{ inputs.upload-artifact != true && inputs.skip-build != true }}
         run: npm run build
-        working-directory: ${{ env.WEB_DIR }}
+        working-directory: ${{ inputs.web-dir }}
         env:
+          # TODO: Check if this is needed for web build
           NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Upload Web project artifact
         if: ${{ inputs.upload-artifact == true }}
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: web
-          path: web
+          name: ${{ inputs.web-dir }}
+          path: ${{ inputs.web-dir }}
