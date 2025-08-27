@@ -56,6 +56,22 @@ jobs:
           }
         shell: pwsh
 
+      - name: Verify configuration .env files
+        run: |
+          Write-Host "=== Searching for .env files ==="
+          $envFiles = Get-ChildItem -Path . -Recurse -Include ".env" -File
+          if ($envFiles.Count -eq 0) {
+            Write-Host "No .env files found"
+            exit 1
+          }
+
+          foreach ($file in $envFiles) {
+            Write-Host "`n$file"
+            # Show first few lines safely
+            git --no-pager diff --no-index -- /dev/null $file.FullName || true
+          }
+        shell: pwsh
+
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
