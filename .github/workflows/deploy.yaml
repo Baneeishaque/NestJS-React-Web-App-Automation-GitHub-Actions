@@ -72,7 +72,10 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            pwd
+            ls -a
             cd ~/${{ secrets.APP_NAME }} || exit 1
+            ls -a
             if [ -f ${{ env.API_ZIP_NAME }} ]; then sudo unzip -o ${{ env.API_ZIP_NAME }}; else echo "${{ env.API_ZIP_NAME }} not found!"; exit 1; fi
 
   deploy-web:
