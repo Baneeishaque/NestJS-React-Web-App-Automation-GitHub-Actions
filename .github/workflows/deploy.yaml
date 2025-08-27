@@ -52,7 +52,10 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            pwd
+            ls
             sudo mkdir -p ~/${{ secrets.APP_NAME }}
+            ls
             sudo chown $USER:$USER ~/${{ secrets.APP_NAME }}
 
       - name: Copy dist.zip to server
@@ -62,7 +65,7 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "${{ env.API_DIR }}/${{ env.API_ZIP_NAME }}"
-          target: "/home/${{ github.event.inputs.server_user }}/${{ secrets.APP_NAME }}"
+          target: "/home/${{ github.event.inputs.server_user }}/${{ secrets.APP_NAME }}/"
           overwrite: true
 
       - name: SSH Deploy API
@@ -73,9 +76,10 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             pwd
-            ls -a
+            ls
             cd ~/${{ secrets.APP_NAME }} || exit 1
-            ls -a
+            pwd
+            ls
             if [ -f ${{ env.API_ZIP_NAME }} ]; then sudo unzip -o ${{ env.API_ZIP_NAME }}; else echo "${{ env.API_ZIP_NAME }} not found!"; exit 1; fi
 
   deploy-web:
