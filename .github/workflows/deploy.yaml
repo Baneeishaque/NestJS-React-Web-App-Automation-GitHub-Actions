@@ -39,7 +39,7 @@ jobs:
         uses: actions/download-artifact@v5.0.0
         with:
           name: api-dist
-          path: api/dist
+          path: ${{ env.API_DIR }}/dist
 
       - name: Zip dist folder
         run: zip -r ${{ env.API_ZIP_NAME }} dist
@@ -47,6 +47,8 @@ jobs:
 
       - run: pwd
       - run: ls
+      - run: ls ${{ env.API_DIR }}
+      - run: ls ${{ env.API_DIR }}/dist
 
       - name: Ensure target directory exists and is writable
         uses: appleboy/ssh-action@v1.2.2
@@ -55,7 +57,7 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            echo "pwd: $pwd"
+            echo "pwd: " $pwd
             echo 'ls:'
             ls
             sudo mkdir -p ~/${{ secrets.APP_NAME }}
@@ -80,11 +82,11 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            echo "pwd: $pwd"
+            echo "pwd: " $pwd
             echo 'ls:'
             ls
             cd ~/${{ secrets.APP_NAME }} || exit 1
-            echo "pwd: $pwd"
+            echo "pwd: " $pwd
             echo 'ls:'
             ls
             if [ -f ${{ env.API_ZIP_NAME }} ]; then sudo unzip -o ${{ env.API_ZIP_NAME }}; else echo "${{ env.API_ZIP_NAME }} not found!"; exit 1; fi
