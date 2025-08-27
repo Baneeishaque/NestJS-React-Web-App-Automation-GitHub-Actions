@@ -103,4 +103,4 @@ jobs:
         if: steps.check-webhook.outputs.exists == 'true'
         env:
           DRY_RUN: ${{ github.event_name == 'pull_request' }}
-        run: cd scripts && npm run manage-webhooks
+        run: cd scripts && cat .env && npm run manage-webhooks
