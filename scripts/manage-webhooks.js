@@ -25,6 +25,7 @@ const SUPABASE_PROJECT_REF = process.env.SUPABASE_PROJECT_REF;
 const WEBHOOK_URL = `https://${SUPABASE_PROJECT_REF}.supabase.co/functions/v1/github-webhook`;
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || '';
 const DRY_RUN = process.env.DRY_RUN === 'true';
+console.log(process.env);
 
 // Repositories to manage webhooks for
 const repositories = process.env.REPOSITORIES
