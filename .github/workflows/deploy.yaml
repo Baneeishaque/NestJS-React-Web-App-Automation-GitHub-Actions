@@ -62,7 +62,7 @@ jobs:
           username: ${{ github.event.inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "${{ env.API_DIR }}/${{ env.API_ZIP_NAME }}"
-          target: "/home/${{ github.event.inputs.server_user }}/"
+          target: "/home/${{ github.event.inputs.server_user }}/${{ secrets.APP_NAME }}"
           overwrite: true
 
       - name: SSH Deploy API
@@ -139,7 +139,6 @@ jobs:
             if [ -f ${{ env.WEB_ZIP_NAME }} ]; then
               cd client || exit 1
               sudo unzip -o ../${{ env.WEB_ZIP_NAME }}
-              cd ..
             else
               echo "${{ env.WEB_ZIP_NAME }} not found!"
               exit 1
