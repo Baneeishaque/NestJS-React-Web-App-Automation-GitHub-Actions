@@ -139,7 +139,7 @@ async function manageWebhooks() {
         }
       } else {
         console.log(`⚠️ [${DRY_RUN ? 'WOULD CREATE' : 'CREATING'}] webhook for ${repo}`);
-        
+
         if (!DRY_RUN) {
           // Create webhook with proper configuration
           const webhookConfig = {
