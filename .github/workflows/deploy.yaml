@@ -52,11 +52,6 @@ jobs:
         run: zip -r ${{ env.API_ZIP_NAME }} dist
         working-directory: ${{ inputs.api_dir }}
 
-      - run: pwd
-      - run: ls
-      - run: ls ${{ inputs.api_dir }}
-      - run: ls ${{ inputs.api_dir }}/dist
-
       - name: Ensure target directory exists and is writable
         uses: appleboy/ssh-action@v1.2.2
         with:
@@ -64,14 +59,8 @@ jobs:
           username: ${{ inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            echo "pwd: "
-            pwd
-            echo 'ls:'
-            ls
             APP_PATH="/home/${{ inputs.server_user }}/${{ secrets.APP_NAME }}"
             sudo mkdir -p $APP_PATH
-            echo 'ls:'
-            ls
             sudo chown ${{ inputs.server_user }}:${{ inputs.server_user }} $APP_PATH
 
       - name: Copy dist.zip to server
@@ -91,15 +80,7 @@ jobs:
           username: ${{ inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            echo "pwd: "
-            pwd
-            echo 'ls:'
-            ls
             cd /home/${{ inputs.server_user }}/${{ secrets.APP_NAME }} || exit 1
-            echo "pwd: "
-            pwd
-            echo 'ls:'
-            ls
             if [ -f ${{ env.API_ZIP_NAME }} ]; then
               sudo unzip -o ${{ env.API_ZIP_NAME }}
             else
@@ -148,8 +129,6 @@ jobs:
           script: |
             APP_CLIENT_PATH="/home/${{ inputs.server_user }}/${{ secrets.APP_NAME }}/client"
             sudo mkdir -p $APP_CLIENT_PATH
-            echo 'ls:'
-            ls
             sudo chown ${{ inputs.server_user }}:${{ inputs.server_user }} $APP_CLIENT_PATH
 
       - name: Copy web-dist.zip to server
