@@ -123,7 +123,6 @@ jobs:
     env:
       WEB_ZIP_NAME: ${{ inputs.web_dir }}-dist.zip
     steps:
-
       - name: Zip dist contents as client-dist.zip
         run: cd dist && zip -r ../${{ env.WEB_ZIP_NAME }} .
         working-directory: ${{ inputs.web_dir }}
