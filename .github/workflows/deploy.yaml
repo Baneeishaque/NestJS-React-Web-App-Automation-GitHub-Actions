@@ -278,7 +278,8 @@ jobs:
       # TODO: Cache Render CLI between runs
       # TODO: Use brew
       - name: Install Render CLI
-        run: npm install -g @render-api/cli
+        run: curl -fsSL https://raw.githubusercontent.com/render-oss/cli/refs/heads/main/bin/install.sh | sh
+        shell: bash
 
       - name: Deploy to Render
         env:
