@@ -65,8 +65,8 @@ jobs:
       - name: Upload Web project artifact
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: ${{ inputs.web-dir }}-dist
-          path: ${{ inputs.web-dir }}/dist
+          name: ${{ inputs.web_dir }}-dist
+          path: ${{ inputs.web_dir }}/dist
 
 
   deploy-api:
