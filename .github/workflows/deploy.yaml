@@ -49,7 +49,7 @@ jobs:
         run: |
           sed -i.bak "s|baseURL: 'http://localhost:3000/'|baseURL: '/'|g" src/axios/axios.js
           echo "--- Verifying baseURL after replacement ---"
-          grep baseURL src/axios/Axios.js
+          grep baseURL src/axios/axios.js
         working-directory: ${{ inputs.web_dir }}
 
       - name: Build Web (dev/test)
