@@ -46,16 +46,6 @@ on:
         required: false
         default: '["18.20.8", "16", "18", "20", "22", "lts/*", "node"]'
         type: string
-      skip-build:
-        description: 'Skip npm run build step'
-        required: false
-        default: false
-        type: boolean
-      upload-artifact:
-        description: 'Upload build artifact (skip build step if true)'
-        required: false
-        default: false
-        type: boolean
       web-dir:
         description: 'Web directory'
         required: false
@@ -107,16 +97,8 @@ jobs:
         working-directory: ${{ inputs.web-dir }}
 
       - name: Build Web (dev/test)
-        if: ${{ inputs.upload-artifact != true && inputs.skip-build != true }}
         run: npm run build
         working-directory: ${{ inputs.web-dir }}
         env:
           # TODO: Check if this is needed for web build
           NODE_OPTIONS: --max-old-space-size=4096
-
-      - name: Upload Web project artifact
-        if: ${{ inputs.upload-artifact == true }}
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: ${{ inputs.web-dir }}
-          path: ${{ inputs.web-dir }}
