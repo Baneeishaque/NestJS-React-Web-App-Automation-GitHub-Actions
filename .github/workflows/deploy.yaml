@@ -62,6 +62,12 @@ jobs:
           # TODO: Check if this is needed for web build
           NODE_OPTIONS: --max-old-space-size=4096
 
+      - name: Upload Web project artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: ${{ inputs.web-dir }}-dist
+          path: ${{ inputs.web-dir }}/dist
+
 
   deploy-api:
     runs-on: ubuntu-latest
@@ -123,6 +129,12 @@ jobs:
     env:
       WEB_ZIP_NAME: ${{ inputs.web_dir }}-dist.zip
     steps:
+      - name: Download Web project artifact
+        uses: actions/download-artifact@v5.0.0
+        with:
+          name: ${{ inputs.web_dir }}-dist
+          path: ${{ inputs.web_dir }}/dist
+
       - name: Zip dist contents as client-dist.zip
         run: cd dist && zip -r ../${{ env.WEB_ZIP_NAME }} .
         working-directory: ${{ inputs.web_dir }}
