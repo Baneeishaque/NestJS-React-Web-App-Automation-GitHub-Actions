@@ -4,9 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       server_user:
-        description: 'SSH username for server'
+        description: 'SSH username for server (if deploying to server)'
         required: false
         default: 'ubuntu'
+      deploy_target:
+        description: 'Where to deploy the application'
+        type: choice
+        options:
+          - server
+          - render
+        required: true
+        default: 'server'
       api_dir:
         description: 'Directory for the API source code'
         required: false
@@ -15,6 +23,10 @@ on:
         description: 'Directory for the Web source code'
         required: false
         default: 'web'
+      branch:
+        description: 'Branch name'
+        required: false
+        type: string
 
 jobs:
   build-api:
@@ -27,7 +39,6 @@ jobs:
 
   build-web:
     runs-on: ubuntu-latest
-    needs: build-api
     steps:
       - name: Checkout web repository
         uses: actions/checkout@v4.2.2
@@ -66,9 +77,10 @@ jobs:
           path: ${{ inputs.web_dir }}/dist
 
 
-  deploy-api:
+  deploy-api-to-server:
     runs-on: ubuntu-latest
-    needs: build-web
+    needs: [build-web, build-api]
+    if: inputs.deploy_target == 'server'
     env:
       # TODO: Use constant for dist
       API_ZIP_NAME: ${{ inputs.api_dir }}-dist.zip
@@ -120,9 +132,10 @@ jobs:
               exit 1
             fi
 
-  deploy-web:
+  deploy-web-to-server:
     runs-on: ubuntu-latest
-    needs: deploy-api
+    needs: deploy-api-to-server
+    if: inputs.deploy_target == 'server'
     env:
       WEB_ZIP_NAME: ${{ inputs.web_dir }}-dist.zip
     steps:
@@ -175,9 +188,10 @@ jobs:
               exit 1
             fi
 
-  restart-services:
+  restart-server-services:
     runs-on: ubuntu-latest
-    needs: deploy-web
+    needs: deploy-web-to-server
+    if: inputs.deploy_target == 'server'
     steps:
       - name: Restart pm2 and nginx
         uses: appleboy/ssh-action@v1.2.2
@@ -189,3 +203,80 @@ jobs:
             cd /home/${{ inputs.server_user }}/${{ secrets.APP_NAME }}
             pm2 restart ${{ secrets.APP_NAME }} || pm2 start dist/main.js --name ${{ secrets.APP_NAME }}
             sudo systemctl restart nginx
+
+  deploy-to-render:
+    runs-on: ubuntu-latest
+    needs: [build-web, build-api]
+    if: inputs.deploy_target == 'render'
+    steps:
+      - name: Checkout main repository (with submodules)
+        uses: actions/checkout@v4.2.2
+        with:
+          submodules: true
+
+      - name: Install GitHub CLI (official)
+        run: bash bash_scripts/installGitHubCli.bash
+
+      - name: Create directory for final archive
+        run: mkdir -p deploy_root/dist
+
+      - name: Download API build artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: ${{ inputs.api_dir }}-dist
+          path: deploy_root/dist
+
+      - name: Download Web build artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: ${{ inputs.web_dir }}-dist
+          path: deploy_root/dist/client
+
+      - name: Get default branch if not specified
+        id: get-branch
+        if: ${{ !inputs.branch }}
+        run: |
+          DEFAULT_BRANCH=$(gh api repos/${{ secrets.API_REPO }} --jq '.default_branch')
+          echo "Using default branch: $DEFAULT_BRANCH"
+          echo "branch=$DEFAULT_BRANCH" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+        shell: bash
+
+      - name: Checkout api repository for package files
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.API_REPO }}
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          path: api_src
+          ref: ${{ inputs.branch || steps.get-branch.outputs.branch }}
+          fetch-depth: 1
+          sparse-checkout: |
+            package.json
+            package-lock.json
+          sparse-checkout-cone-mode: false
+
+      - name: Copy package files to deploy root
+        run: cp api_src/package*.json deploy_root/
+
+      - name: Verify final directory structure
+        run: |
+          echo "--- Contents of deploy_root ---"
+          ls -R deploy_root
+
+      - name: Archive for Render
+        run: zip -r render-deploy.zip .
+        working-directory: deploy_root
+
+      - name: Set up Node.js for Render CLI
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18.x"
+
+      - name: Install Render CLI
+        run: npm install -g @render-api/cli
+
+      - name: Deploy to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: render deploy ${{ secrets.RENDER_SERVICE_ID }} --archive render-deploy.zip
