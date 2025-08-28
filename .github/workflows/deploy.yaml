@@ -52,6 +52,7 @@ jobs:
         with:
           node-version: "18.20.8"
 
+      # TODO: Cache node modules
       - name: Install dependencies
         run: npm install
         working-directory: ${{ inputs.web_dir }}
@@ -214,6 +215,7 @@ jobs:
         with:
           submodules: true
 
+      # TODO: Cache gh between runs
       - name: Install GitHub CLI (official)
         run: bash bash_scripts/installGitHubCli.bash
 
@@ -273,6 +275,8 @@ jobs:
         with:
           node-version: "18.x"
 
+      # TODO: Cache Render CLI between runs
+      # TODO: Use brew
       - name: Install Render CLI
         run: npm install -g @render-api/cli
 
