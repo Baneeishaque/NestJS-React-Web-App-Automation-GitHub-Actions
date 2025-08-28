@@ -124,7 +124,7 @@ jobs:
     steps:
 
       - name: Zip dist contents as client-dist.zip
-        run: cd dist && zip -r ../${{ env.WEB_ZIP_NAME }} . && cd ..
+        run: cd dist && zip -r ../${{ env.WEB_ZIP_NAME }} .
         working-directory: ${{ inputs.web_dir }}
 
       # TODO: Ensure this is necessary, 1. mkdir, 2. chown
