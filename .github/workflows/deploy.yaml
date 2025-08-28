@@ -80,11 +80,12 @@ jobs:
           username: ${{ inputs.server_user }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /home/${{ inputs.server_user }}/${{ secrets.APP_NAME }} || exit 1
-            if [ -f ${{ env.API_ZIP_NAME }} ]; then
-              sudo unzip -o ${{ env.API_ZIP_NAME }}
+            APP_PATH="/home/${{ inputs.server_user }}/${{ secrets.APP_NAME }}"
+            API_DIST_ZIP_FILE="$APP_PATH/${{ inputs.api_dir }}/${{ env.API_ZIP_NAME }}"
+            if [ -f $API_DIST_ZIP_FILE ]; then
+              sudo unzip -o $API_DIST_ZIP_FILE -d $APP_PATH
             else
-              echo "${{ env.API_ZIP_NAME }} not found!"
+              echo "$API_DIST_ZIP_FILE not found!"
               exit 1
             fi
 
@@ -120,6 +121,7 @@ jobs:
         run: cd dist && zip -r ../${{ env.WEB_ZIP_NAME }} . && cd ..
         working-directory: ${{ inputs.web_dir }}
 
+      # TODO: Ensure this is necessary, 1. mkdir, 2. chown
       - name: Ensure web target directory exists and is writable
         uses: appleboy/ssh-action@v1.2.2
         with:
@@ -149,12 +151,12 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             APP_PATH="/home/${{ inputs.server_user }}/${{ secrets.APP_NAME }}"
+            WEB_DIST_ZIP_FILE="$APP_PATH/${{ inputs.web_dir }}/${{ env.WEB_ZIP_NAME }}"
             CLIENT_PATH="$APP_PATH/client"
-            cd $APP_PATH || exit 1
-            if [ -f ${{ env.WEB_ZIP_NAME }} ]; then
-              sudo unzip -o ${{ env.WEB_ZIP_NAME }} -d $CLIENT_PATH
+            if [ -f $WEB_DIST_ZIP_FILE ]; then
+              sudo unzip -o $WEB_DIST_ZIP_FILE -d $CLIENT_PATH
             else
-              echo "${{ env.WEB_ZIP_NAME }} not found!"
+              echo "$WEB_DIST_ZIP_FILE not found!"
               exit 1
             fi
 
