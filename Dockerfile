@@ -1,29 +1,22 @@
 # Dockerfile for a NestJS and React Application
 
-# --- Stage 1: Build the React Frontend ---
+# --- Stage 1: Build the NestJS Backend ---
+FROM node:18-alpine AS api-builder
+WORKDIR /app
+
+COPY api/ ./
+RUN npm install --omit=dev
+RUN npm run build
+
+# --- Stage 2: Build the React Frontend ---
 FROM node:18-alpine AS web-builder
 WORKDIR /app
 
 # Copy package files and install dependencies
-COPY web/package.json web/package-lock.json ./
-RUN npm install
-
-# Copy the rest of the web source code and build
+COPY web/ ./
+RUN npm install --omit=dev
 # Increase memory limit for potentially large frontend builds
 ENV NODE_OPTIONS=--max-old-space-size=4096
-COPY web/ ./
-RUN npm run build
-
-# --- Stage 2: Build the NestJS Backend ---
-FROM node:18-alpine AS api-builder
-WORKDIR /app
-
-# Copy package files and install dependencies
-COPY api/package.json api/package-lock.json ./
-RUN npm install
-
-# Copy the rest of the api source code and build
-COPY api/ ./
 RUN npm run build
 
 # --- Stage 3: Final Production Image ---
@@ -31,8 +24,7 @@ FROM node:18-alpine AS production
 WORKDIR /app
 
 # Copy production dependencies from the api-builder
-COPY --from=api-builder /app/package.json /app/package-lock.json ./
-RUN npm install --omit=dev
+COPY --from=api-builder /app/node_modules ./node_modules
 
 # Copy the built NestJS application
 COPY --from=api-builder /app/dist ./dist
