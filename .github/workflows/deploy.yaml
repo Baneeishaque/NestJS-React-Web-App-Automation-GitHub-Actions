@@ -297,7 +297,7 @@ jobs:
       - name: Install Render CLI
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          brew install render
+          brew install render --HEAD
 
       - name: Deploy to Render
         env:
