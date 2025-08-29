@@ -3,20 +3,6 @@ name: Build and Push Docker Image
 on:
   workflow_dispatch:
     inputs:
-      image-name:
-        description: 'Name of the Docker image (e.g., my-app)'
-        required: true
-        type: string
-      tags:
-        description: 'Comma-separated list of tags for the image'
-        required: false
-        type: string
-        default: 'latest'
-      platforms:
-        description: 'Comma-separated list of platforms to build for (e.g., linux/amd64,linux/arm64)'
-        required: false
-        type: string
-        default: 'linux/amd64,linux/arm64'
       api_dir:
         description: 'Directory for the API source code'
         required: false
