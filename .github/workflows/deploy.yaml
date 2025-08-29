@@ -29,6 +29,52 @@ on:
         type: string
 
 jobs:
+  monitor-ghcr-usage:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.deploy_target == 'render'
+    steps:
+      - name: Check GHCR Usage and Limits
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Fetching GHCR usage statistics..."
+          # Note: The GitHub API endpoint for package billing is not perfectly clear about free tier bandwidth.
+          # 'total_gigabytes_bandwidth_used' refers to storage.
+          # 'total_paid_gigabytes_bandwidth_used' refers to paid data transfer.
+          # We will check storage against the 0.5GB limit and assume the second value can be checked against the 1GB limit,
+          # with a warning that it may not be representative of free tier usage.
+          usage_data=$(gh api /users/${{ github.repository_owner }}/settings/billing/packages)
+          
+          if [ -z "$usage_data" ] || [ "$(echo "$usage_data" | jq '.total_gigabytes_bandwidth_used')" == "null" ]; then
+            echo "::warning::Could not fetch usage data. This is normal if you have not set up a billing account (even for free usage). Skipping usage check."
+            exit 0
+          fi
+
+          storage_used_gb=$(echo "$usage_data" | jq '.total_gigabytes_bandwidth_used')
+          bandwidth_used_gb=$(echo "$usage_data" | jq '.total_paid_gigabytes_bandwidth_used')
+
+          storage_threshold_gb=0.475 # 95% of 0.5 GB
+          bandwidth_threshold_gb=0.95 # 95% of 1.0 GB
+
+          echo "--- GHCR Usage Report ---"
+          echo "Storage: ${storage_used_gb} GB / 0.5 GB (Free Tier)"
+          echo "Data Transfer (Paid): ${bandwidth_used_gb} GB / 1.0 GB (Free Tier Limit, this value may not reflect free usage)"
+          echo "-------------------------"
+
+          if (( $(echo "$storage_used_gb > $storage_threshold_gb" | bc -l) )); then
+            echo "::error::Storage usage (${storage_used_gb} GB) exceeds 95% of the free tier limit (${storage_threshold_gb} GB)."
+            exit 1
+          else
+            echo "Storage usage is within limits."
+          fi
+
+          if (( $(echo "$bandwidth_used_gb > $bandwidth_threshold_gb" | bc -l) )); then
+            echo "::error::Data transfer usage (${bandwidth_used_gb} GB) exceeds 95% of the free tier limit (${bandwidth_threshold_gb} GB)."
+            exit 1
+          else
+            echo "Data transfer usage is within limits."
+          fi
+
   build-api:
     uses: ./.github/workflows/build-api.yaml
     with:
