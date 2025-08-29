@@ -343,4 +343,4 @@ jobs:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          render deploys create ${{ secrets.RENDER_SERVICE_ID }} --image ${{ steps.build-and-push.outputs.digest }}
+          render deploys create ${{ secrets.RENDER_SERVICE_ID }} --image ${{ steps.build-and-push.outputs.metadata.image.name }} --wait
