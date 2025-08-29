@@ -257,6 +257,13 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 1
+          sparse-checkout: Dockerfile
+          sparse-checkout-cone-mode: false
+
       - name: Checkout API Repository
         id: checkout-api
         uses: actions/checkout@v4
