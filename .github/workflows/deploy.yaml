@@ -300,8 +300,8 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/${{ secrets.IMAGE_NAME }}
           tags: |
-            type=raw,value=api-${{ steps.checkout-api.outputs.short_commit }}-web-${{ steps.checkout-web.outputs.short_commit }}
-            type=raw,value=latest,enable=${{ steps.checkout-api.outputs.branch == 'main' }} # Enable latest tag only if api branch is main
+            type=raw,value=api-${{ steps.checkout-api.outputs.commit }}-web-${{ steps.checkout-web.outputs.commit }}
+            type=raw,value=latest,enable=${{ steps.checkout-api.outputs.ref == 'main' && steps.checkout-web.outputs.ref == 'main' }}
           labels: |
             api-repo-sha=${{ steps.checkout-api.outputs.commit }}
             web-repo-sha=${{ steps.checkout-web.outputs.commit }}
