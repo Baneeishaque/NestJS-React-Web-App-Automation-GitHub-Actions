@@ -2,7 +2,7 @@
 
 # --- Stage 1: Build the React Frontend ---
 FROM node:18-alpine AS web-builder
-WORKDIR /app/web
+WORKDIR /app
 
 # Copy package files and install dependencies
 COPY web/package.json web/package-lock.json ./
@@ -16,7 +16,7 @@ RUN npm run build
 
 # --- Stage 2: Build the NestJS Backend ---
 FROM node:18-alpine AS api-builder
-WORKDIR /app/api
+WORKDIR /app
 
 # Copy package files and install dependencies
 COPY api/package.json api/package-lock.json ./
@@ -31,14 +31,14 @@ FROM node:18-alpine AS production
 WORKDIR /app
 
 # Copy production dependencies from the api-builder
-COPY --from=api-builder /app/api/package.json /app/api/package-lock.json ./
+COPY --from=api-builder /app/package.json /app/package-lock.json ./
 RUN npm install --omit=dev
 
 # Copy the built NestJS application
-COPY --from=api-builder /app/api/dist ./dist
+COPY --from=api-builder /app/dist ./dist
 
 # Copy the built React application into a "client" folder
-COPY --from=web-builder /app/web/dist ./client
+COPY --from=web-builder /app/dist ./client
 
 # Expose the port the app will run on
 EXPOSE 3000
