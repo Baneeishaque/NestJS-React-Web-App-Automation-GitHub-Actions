@@ -5,7 +5,7 @@ FROM node:18-alpine AS api-builder
 WORKDIR /app
 
 COPY api/ ./
-RUN npm install --omit=dev
+RUN npm install
 RUN npm run build
 
 # --- Stage 2: Build the React Frontend ---
@@ -14,7 +14,7 @@ WORKDIR /app
 
 # Copy package files and install dependencies
 COPY web/ ./
-RUN npm install --omit=dev
+RUN npm install
 # Increase memory limit for potentially large frontend builds
 ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build
@@ -24,7 +24,8 @@ FROM node:18-alpine AS production
 WORKDIR /app
 
 # Copy production dependencies from the api-builder
-COPY --from=api-builder /app/node_modules ./node_modules
+COPY --from=api-builder /app/package.json /app/package-lock.json ./
+RUN npm install --omit=dev
 
 # Copy the built NestJS application
 COPY --from=api-builder /app/dist ./dist
