@@ -16,7 +16,7 @@ WORKDIR /app
 COPY web/ ./
 RUN npm install
 # Increase memory limit for potentially large frontend builds
-ENV NODE_OPTIONS=--max-old-space-size=4096
+# ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build
 
 # --- Stage 3: Final Production Image ---
