@@ -1,0 +1,98 @@
+name: Build and Push Docker Image
+
+on:
+  workflow_call:
+    inputs:
+      image-name:
+        description: 'Name of the Docker image (e.g., my-app)'
+        required: true
+        type: string
+      tags:
+        description: 'Comma-separated list of tags for the image'
+        required: false
+        type: string
+        default: 'latest'
+      platforms:
+        description: 'Comma-separated list of platforms to build for (e.g., linux/amd64,linux/arm64)'
+        required: false
+        type: string
+        default: 'linux/amd64,linux/arm64'
+      api_dir:
+        description: 'Directory for the API source code'
+        required: false
+        type: string
+        default: 'api'
+      web_dir:
+        description: 'Directory for the Web source code'
+        required: false
+        type: string
+        default: 'web'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: Dockerfile
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout API Repository
+        id: checkout-api
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.API_REPO }}
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          path: ${{ inputs.api_dir }}
+
+      - name: Checkout Web Repository
+        id: checkout-web
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.WEB_REPO }}
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          path: ${{ inputs.web_dir }}
+
+      - name: Set production baseURL in axios.js
+        run: |
+          sed -i.bak "s|baseURL: 'http://localhost:3000/'|baseURL: '/'|g" src/axios/axios.js
+          echo "--- Verifying baseURL after replacement ---"
+          grep baseURL src/axios/axios.js
+        working-directory: ${{ inputs.web_dir }}
+
+      - name: Log in to the GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags and labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ secrets.IMAGE_NAME }}
+          tags: |
+            type=raw,value=api-${{ steps.checkout-api.outputs.commit }}-web-${{ steps.checkout-web.outputs.commit }}
+            type=raw,value=latest,enable=${{ steps.checkout-api.outputs.ref == 'main' && steps.checkout-web.outputs.ref == 'main' }}
+          labels: |
+            api-repo-sha=${{ steps.checkout-api.outputs.commit }}
+            web-repo-sha=${{ steps.checkout-web.outputs.commit }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
