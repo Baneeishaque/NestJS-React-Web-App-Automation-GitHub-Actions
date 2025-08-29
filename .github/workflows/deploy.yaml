@@ -293,16 +293,12 @@ jobs:
         run: zip -r render-deploy.zip .
         working-directory: deploy_root
 
-      - name: Set up Node.js for Render CLI
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18.x"
 
       # TODO: Cache Render CLI between runs
-      # TODO: Use brew
       - name: Install Render CLI
-        run: curl -fsSL https://raw.githubusercontent.com/render-oss/cli/refs/heads/main/bin/install.sh | sh
-        shell: bash
+        run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew install render
 
       - name: Deploy to Render
         env:
