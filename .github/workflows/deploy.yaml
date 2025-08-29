@@ -23,10 +23,6 @@ on:
         description: 'Directory for the Web source code'
         required: false
         default: 'web'
-      branch:
-        description: 'Branch name'
-        required: false
-        type: string
 
 jobs:
   monitor-ghcr-usage:
@@ -279,17 +275,6 @@ jobs:
         with:
           name: ${{ inputs.web_dir }}-dist
           path: deploy_root/dist/client
-
-      - name: Get default branch if not specified
-        id: get-branch
-        if: ${{ !inputs.branch }}
-        run: |
-          DEFAULT_BRANCH=$(gh api repos/${{ secrets.API_REPO }} --jq '.default_branch')
-          echo "Using default branch: $DEFAULT_BRANCH"
-          echo "branch=$DEFAULT_BRANCH" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
-        shell: bash
 
       - name: Checkout api repository for package files
         uses: actions/checkout@v4
