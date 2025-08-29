@@ -253,15 +253,6 @@ jobs:
     needs: [build-web, build-api]
     if: inputs.deploy_target == 'render'
     steps:
-      - name: Checkout main repository (with submodules)
-        uses: actions/checkout@v4.2.2
-        with:
-          submodules: true
-
-      # TODO: Cache gh between runs
-      - name: Install GitHub CLI (official)
-        run: bash bash_scripts/installGitHubCli.bash
-
       - name: Create directory for final archive
         run: mkdir -p deploy_root/dist
 
