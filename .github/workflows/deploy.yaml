@@ -88,6 +88,7 @@ jobs:
           repository: ${{ secrets.WEB_REPO }}
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           path: ${{ inputs.web_dir }}
+          fetch-depth: 1
 
       - name: Set up Node.js
         uses: actions/setup-node@v4.4.0

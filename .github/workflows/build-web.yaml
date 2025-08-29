@@ -64,6 +64,7 @@ jobs:
         uses: actions/checkout@v4.2.2
         with:
           submodules: true
+          fetch-depth: 1
 
       - name: Install GitHub CLI (official)
         run: bash bash_scripts/installGitHubCli.bash
@@ -86,6 +87,7 @@ jobs:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           path: ${{ inputs.web-dir }}
           ref: ${{ inputs.branch || steps.get-branch.outputs.branch }}
+          fetch-depth: 1
 
       - name: Set up Node.js
         uses: actions/setup-node@v4.4.0
