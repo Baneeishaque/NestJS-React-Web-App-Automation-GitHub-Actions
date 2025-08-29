@@ -274,7 +274,6 @@ jobs:
           repository: ${{ secrets.API_REPO }}
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           path: api_src
-          ref: ${{ inputs.branch || steps.get-branch.outputs.branch }}
           fetch-depth: 1
           sparse-checkout: |
             package.json
