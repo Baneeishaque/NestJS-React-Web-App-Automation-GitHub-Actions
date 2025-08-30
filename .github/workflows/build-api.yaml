@@ -65,7 +65,7 @@ jobs:
         node-version: ${{ fromJson(inputs.node-version || '["18.20.8", "16", "18", "20", "22", "lts/*", "node"]') }}
     steps:
       - name: Checkout main repository (with submodules)
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.3.0
         with:
           submodules: true
 
@@ -84,7 +84,7 @@ jobs:
         shell: bash
 
       - name: Checkout api repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.3.0
         with:
           repository: ${{ secrets.API_REPO }}
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
