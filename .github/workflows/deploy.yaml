@@ -344,6 +344,6 @@ jobs:
           CI: true
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          render workspace set ${{ secrets.RENDER_WORKSPACE_ID }} --confirm >/dev/null 2>&1
-          render deploys create ${{ secrets.RENDER_SERVICE_ID }} --image ghcr.io/${{ secrets.GHCR_PACKAGE_OWNER }}/${{ secrets.IMAGE_NAME }}:api-${{ steps.checkout-api.outputs.commit }}-web-${{ steps.checkout-web.outputs.commit }} --wait --confirm >/dev/null 2>&1
+          render workspace set ${{ secrets.RENDER_WORKSPACE_ID }} --confirm --output json > render.log
+          render deploys create ${{ secrets.RENDER_SERVICE_ID }} --image ghcr.io/${{ secrets.GHCR_PACKAGE_OWNER }}/${{ secrets.IMAGE_NAME }}:api-${{ steps.checkout-api.outputs.commit }}-web-${{ steps.checkout-web.outputs.commit }} --wait --confirm --output json >> render.log
         shell: bash
