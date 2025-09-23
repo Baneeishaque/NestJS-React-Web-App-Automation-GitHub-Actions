@@ -56,5 +56,6 @@
     "subshell",
     "traceroute",
     "winget"
-  ]
+  ],
+  "gitlens.ai.model": "gemini:gemini-2.5-flash"
 }
