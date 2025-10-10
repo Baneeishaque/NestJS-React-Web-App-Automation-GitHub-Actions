@@ -92,7 +92,7 @@ jobs:
           path: ${{ inputs.web_dir }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version: "18.20.8"
 
