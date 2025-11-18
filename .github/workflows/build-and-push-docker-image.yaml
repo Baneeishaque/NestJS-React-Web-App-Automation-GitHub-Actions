@@ -22,14 +22,14 @@ jobs:
       packages: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           sparse-checkout: Dockerfile
           sparse-checkout-cone-mode: false
 
       - name: Checkout API Repository
         id: checkout-api
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ secrets.API_REPO }}
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
@@ -37,7 +37,7 @@ jobs:
 
       - name: Checkout Web Repository
         id: checkout-web
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ secrets.WEB_REPO }}
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
