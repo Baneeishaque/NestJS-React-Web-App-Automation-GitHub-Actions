@@ -141,7 +141,7 @@ jobs:
         working-directory: ${{ inputs.api_dir }}
 
       - name: Ensure target directory exists and is writable
-        uses: appleboy/ssh-action@v1.2.2
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ inputs.server_user }}
@@ -162,7 +162,7 @@ jobs:
           overwrite: true
 
       - name: SSH Deploy API
-        uses: appleboy/ssh-action@v1.2.2
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ inputs.server_user }}
@@ -196,7 +196,7 @@ jobs:
 
       # TODO: Ensure this is necessary, 1. mkdir, 2. chown
       - name: Ensure web target directory exists and is writable
-        uses: appleboy/ssh-action@v1.2.2
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ inputs.server_user }}
@@ -217,7 +217,7 @@ jobs:
           overwrite: true
 
       - name: SSH Deploy Web
-        uses: appleboy/ssh-action@v1.2.2
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ inputs.server_user }}
@@ -239,7 +239,7 @@ jobs:
     if: inputs.deploy_target == 'server'
     steps:
       - name: Restart pm2 and nginx
-        uses: appleboy/ssh-action@v1.2.2
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ inputs.server_user }}
