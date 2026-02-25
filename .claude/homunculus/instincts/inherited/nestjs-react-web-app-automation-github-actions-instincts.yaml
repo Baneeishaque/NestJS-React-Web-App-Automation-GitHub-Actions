@@ -1,0 +1,408 @@
+# Instincts generated from https://github.com/Baneeishaque/nestjs-react-web-app-automation-github-actions
+# Generated: 2026-02-25T18:00:32.053Z
+# Version: 2.0
+
+---
+id: nestjs-react-web-app-automation-github-actions-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Commit Length
+
+## Action
+
+Keep commit messages concise (under 50 characters)
+
+## Evidence
+
+- Average commit message length: 42 chars
+- Based on 156 commits
+
+---
+id: nestjs-react-web-app-automation-github-actions-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: nestjs-react-web-app-automation-github-actions-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: nestjs-react-web-app-automation-github-actions-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: nestjs-react-web-app-automation-github-actions-workflow-ci-workflow-optimization
+trigger: "when doing ci workflow optimization"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Workflow Ci Workflow Optimization
+
+## Action
+
+Follow the ci-workflow-optimization workflow:
+1. Modify .github/workflows/*.yaml files
+2. Remove unnecessary parameters like fetch-depth
+3. Clean up unused inputs and dependencies
+4. Update VS Code settings for spell check
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~8x per month
+- Files: .github/workflows/deploy.yaml, .github/workflows/build-api.yaml, .github/workflows/build-web.yaml
+
+---
+id: nestjs-react-web-app-automation-github-actions-workflow-docker-deployment-refinement
+trigger: "when doing docker deployment refinement"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Workflow Docker Deployment Refinement
+
+## Action
+
+Follow the docker-deployment-refinement workflow:
+1. Modify Dockerfile for build optimization
+2. Update .github/workflows/deploy.yaml for Docker operations
+3. Adjust platform support (ARM64 additions/removals)
+4. Configure image tagging and registry settings
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~12x per month
+- Files: Dockerfile, .github/workflows/deploy.yaml, .github/workflows/build-and-push-docker-image.yaml
+
+---
+id: nestjs-react-web-app-automation-github-actions-workflow-render-cli-deployment-iteration
+trigger: "when doing render cli deployment iteration"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Workflow Render Cli Deployment Iteration
+
+## Action
+
+Follow the render-cli-deployment-iteration workflow:
+1. Update Render CLI installation method
+2. Modify .github/workflows/deploy.yaml with new Render configurations
+3. Add or adjust logging and output handling
+4. Update secret management and workspace settings
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~10x per month
+- Files: .github/workflows/deploy.yaml, act.secrets.example
+
+---
+id: nestjs-react-web-app-automation-github-actions-workflow-vscode-settings-maintenance
+trigger: "when doing vscode settings maintenance"
+confidence: 0.75
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Workflow Vscode Settings Maintenance
+
+## Action
+
+Follow the vscode-settings-maintenance workflow:
+1. Add new words to spell check dictionary
+2. Update extension configurations
+3. Modify workspace-specific settings
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~5x per month
+- Files: .vscode/settings.json, .vscode/extensions.json
+
+---
+id: nestjs-react-web-app-automation-github-actions-camelcase-files
+trigger: "When creating new files in this project"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Camelcase Files
+
+## Action
+
+Use camelCase naming convention for file names
+
+## Evidence
+
+- Folder structure shows camelCase pattern
+- JavaScript codebase convention detected
+
+---
+id: nestjs-react-web-app-automation-github-actions-pascalcase-classes
+trigger: "When defining classes in JavaScript/TypeScript"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Pascalcase Classes
+
+## Action
+
+Use PascalCase naming convention for class names
+
+## Evidence
+
+- Naming conventions analysis shows PascalCase for classes
+- Standard JavaScript convention
+
+---
+id: nestjs-react-web-app-automation-github-actions-screaming-snake-constants
+trigger: "When defining constants"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Screaming Snake Constants
+
+## Action
+
+Use SCREAMING_SNAKE_CASE for constant names
+
+## Evidence
+
+- Naming conventions analysis shows SCREAMING_SNAKE_CASE for constants
+
+---
+id: nestjs-react-web-app-automation-github-actions-absolute-imports
+trigger: "When importing modules"
+confidence: 0.6
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Absolute Imports
+
+## Action
+
+Use absolute import paths
+
+## Evidence
+
+- Import style detected as absolute in codebase analysis
+
+---
+id: nestjs-react-web-app-automation-github-actions-try-catch-errors
+trigger: "When handling errors in code"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Try Catch Errors
+
+## Action
+
+Use try-catch blocks for error handling
+
+## Evidence
+
+- Error handling style detected as try-catch
+- No custom error classes or global handlers found
+
+---
+id: nestjs-react-web-app-automation-github-actions-conventional-commits
+trigger: "When making a commit"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Conventional Commits
+
+## Action
+
+Use conventional commit format with prefixes: feat, fix, chore, docs, refactor
+
+## Evidence
+
+- Commit examples show feat/fix/chore prefixes
+- Average commit length is 42 characters
+- Multiple conventional commit examples found
+
+---
+id: nestjs-react-web-app-automation-github-actions-optimize-ci-workflows
+trigger: "When CI/CD performance needs improvement or complexity reduction"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Optimize Ci Workflows
+
+## Action
+
+Remove unnecessary parameters like fetch-depth, clean up unused inputs, and streamline workflow configurations
+
+## Evidence
+
+- 8 occurrences per month
+- Pattern in .github/workflows/*.yaml modifications
+- Consistent removal of unnecessary parameters
+
+---
+id: nestjs-react-web-app-automation-github-actions-refine-docker-deployment
+trigger: "When Docker build or deployment needs optimization"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Refine Docker Deployment
+
+## Action
+
+Modify Dockerfile for build optimization, adjust platform support, and configure image tagging
+
+## Evidence
+
+- 12 occurrences per month
+- Multiple Dockerfile modifications
+- ARM64 platform adjustments
+- Registry settings changes
+
+---
+id: nestjs-react-web-app-automation-github-actions-improve-render-deploy
+trigger: "When Render deployment reliability or debugging needs improvement"
+confidence: 0.88
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Improve Render Deploy
+
+## Action
+
+Update Render CLI installation method, modify deployment configurations, and enhance logging
+
+## Evidence
+
+- 10 occurrences per month
+- Render CLI installation changes
+- Deploy.yaml modifications
+- Logging improvements
+
+---
+id: nestjs-react-web-app-automation-github-actions-update-vscode-config
+trigger: "When development environment needs configuration updates"
+confidence: 0.82
+domain: workflow
+source: repo-analysis
+source_repo: Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Update Vscode Config
+
+## Action
+
+Add new words to spell check dictionary and update extension configurations
+
+## Evidence
+
+- 5 occurrences per month
+- Regular .vscode/settings.json updates
+- Spell check dictionary maintenance
+
+---
+id: nestjs-react-web-app-automation-github-actions-separate-test-structure
+trigger: "When organizing test files"
+confidence: 0.6
+domain: architecture
+source: repo-analysis
+source_repo: Baneeishaque/nestjs-react-web-app-automation-github-actions
+---
+
+# Nestjs React Web App Automation Github Actions Separate Test Structure
+
+## Action
+
+Place tests in separate directories from source code
+
+## Evidence
+
+- Architecture analysis shows testLocation: 'separate'
+- Single-package structure with separate test organization
+
