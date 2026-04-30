@@ -116,7 +116,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Upload Web project artifact
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: ${{ inputs.web_dir }}-dist
           path: ${{ inputs.web_dir }}/dist
@@ -131,7 +131,7 @@ jobs:
       API_ZIP_NAME: ${{ inputs.api_dir }}-dist.zip
     steps:
       - name: Download API build artifact
-        uses: actions/download-artifact@v5.0.0
+        uses: actions/download-artifact@v8.0.1
         with:
           name: ${{ inputs.api_dir }}-dist
           path: ${{ inputs.api_dir }}/dist
@@ -185,7 +185,7 @@ jobs:
       WEB_ZIP_NAME: ${{ inputs.web_dir }}-dist.zip
     steps:
       - name: Download Web project artifact
-        uses: actions/download-artifact@v5.0.0
+        uses: actions/download-artifact@v8.0.1
         with:
           name: ${{ inputs.web_dir }}-dist
           path: ${{ inputs.web_dir }}/dist
